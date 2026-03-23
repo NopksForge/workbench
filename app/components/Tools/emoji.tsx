@@ -204,7 +204,7 @@ export function CommitEmojiButton({
       await navigator.clipboard.writeText(clipboard);
       setCopied(true);
       onCopied?.();
-      window.setTimeout(() => setCopied(false), 1500);
+      window.setTimeout(() => setCopied(false), 500);
     } catch {
       setCopied(false);
     }
@@ -215,17 +215,22 @@ export function CommitEmojiButton({
       type="button"
       onClick={onClick}
       title={clipboard}
-      className="group flex flex-col items-center gap-1 rounded-xl border border-zinc-200 bg-white px-3 py-3 text-center transition hover:border-zinc-300 hover:bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-950 dark:hover:border-zinc-700 dark:hover:bg-zinc-900"
+      className="group flex flex-col items-center justify-items-center gap-1 rounded-xl border border-zinc-200 bg-white px-3 py-3 text-center transition hover:border-zinc-300 hover:bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-950 dark:hover:border-zinc-700 dark:hover:bg-zinc-900"
     >
-      <span className="text-2xl leading-none select-none" aria-hidden>
-        {emoji}
-      </span>
-      <span className="max-w-22 truncate text-xs font-medium text-zinc-600 dark:text-zinc-400">
-        {label}
-      </span>
-      <span className="font-mono text-[10px] text-zinc-400 opacity-0 transition group-hover:opacity-100 dark:text-zinc-500">
-        {copied ? "Copied" : "Copy"}
-      </span>
+      {copied ? (
+        <span className="flex flex-1 items-center justify-center font-mono text-[10px] text-zinc-400 opacity-0 transition group-hover:opacity-100 dark:text-zinc-500" style={{ minHeight: "2.5rem" }}>
+          Copied
+        </span>
+      ) : (
+        <div className="flex flex-col items-center gap-2">
+          <span className="text-2xl leading-none select-none" aria-hidden>
+            {emoji}
+          </span>
+          <span className="max-w-22 truncate text-xs font-medium text-zinc-600 dark:text-zinc-400">
+            {label}
+          </span>
+        </div>
+      )}
     </button>
   );
 }
@@ -244,57 +249,57 @@ export function EmojiCommitSection() {
 
   return (
     <>
-    <section className="space-y-4">
-      <div>
-        <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">
-          Emoji commits
-        </h2>
-        <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
-          Click a tile to copy a{" "}
-          <code className="rounded bg-zinc-100 px-1 py-0.5 font-mono text-xs dark:bg-zinc-900">
-            git commit -m &quot;…&quot;
-          </code>{" "}
-          prefix. Finish the message in your terminal.
-        </p>
-      </div>
-
-      <div className="space-y-2">
-        <label htmlFor="emoji-commit-search" className="sr-only">
-          Search commit types
-        </label>
-        <input
-          id="emoji-commit-search"
-          type="search"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search by label, emoji, or keyword…"
-          autoComplete="off"
-          spellCheck={false}
-          className="w-full rounded-xl border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 shadow-sm outline-none ring-zinc-400 placeholder:text-zinc-400 focus:border-zinc-300 focus:ring-2 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-100 dark:placeholder:text-zinc-500 dark:focus:border-zinc-600"
-        />
-        {query.trim() && filtered.length === 0 ? (
-          <p className="text-sm text-zinc-500 dark:text-zinc-400">
-            No matches. Try another word.
+      <section className="space-y-4">
+        <div>
+          <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">
+            Emoji commits
+          </h2>
+          <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
+            Click a tile to copy a{" "}
+            <code className="rounded bg-zinc-100 px-1 py-0.5 font-mono text-xs dark:bg-zinc-900">
+              git commit -m &quot;…&quot;
+            </code>{" "}
+            prefix. Finish the message in your terminal.
           </p>
-        ) : null}
-      </div>
+        </div>
 
-      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
-        {filtered.map((t) => (
-          <CommitEmojiButton
-            key={t.label + t.emoji}
-            emoji={t.emoji}
-            label={t.label}
-            onCopied={showCopiedToast}
+        <div className="space-y-2">
+          <label htmlFor="emoji-commit-search" className="sr-only">
+            Search commit types
+          </label>
+          <input
+            id="emoji-commit-search"
+            type="search"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search by label, emoji, or keyword…"
+            autoComplete="off"
+            spellCheck={false}
+            className="w-full rounded-xl border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 shadow-sm outline-none ring-zinc-400 placeholder:text-zinc-400 focus:border-zinc-300 focus:ring-2 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-100 dark:placeholder:text-zinc-500 dark:focus:border-zinc-600"
           />
-        ))}
-      </div>
-    </section>
-    <ClipboardToast
-      id={toastId}
-      message="Copied to clipboard"
-      onDismiss={hideToast}
-    />
+          {query.trim() && filtered.length === 0 ? (
+            <p className="text-sm text-zinc-500 dark:text-zinc-400">
+              No matches. Try another word.
+            </p>
+          ) : null}
+        </div>
+
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
+          {filtered.map((t) => (
+            <CommitEmojiButton
+              key={t.label + t.emoji}
+              emoji={t.emoji}
+              label={t.label}
+              onCopied={showCopiedToast}
+            />
+          ))}
+        </div>
+      </section>
+      <ClipboardToast
+        id={toastId}
+        message="Copied to clipboard"
+        onDismiss={hideToast}
+      />
     </>
   );
 }
