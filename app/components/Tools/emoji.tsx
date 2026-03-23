@@ -1,6 +1,6 @@
 "use client";
 
-import { ClipboardToast } from "@/app/components/ClipboardToast";
+import { ClipboardToast } from "@/app/components/clipboard_toast";
 import { useCallback, useMemo, useState } from "react";
 
 export type CommitTemplate = {
