@@ -40,7 +40,7 @@ export default function Navbar() {
 
   return (
     <nav className="sticky top-0 z-20 border-b border-zinc-100 dark:border-zinc-800 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-md">
-      <div className="w-full mx-auto px-4 h-12 flex items-center justify-between">
+      <div className="w-full mx-auto pl-4 lg:pr-4 sm:pr-2 h-12 flex items-center justify-between">
         {/* Wordmark */}
         <Link
           href="/"
@@ -93,12 +93,26 @@ export default function Navbar() {
             onClick={() => setMenuOpen(o => !o)}
             aria-label={menuOpen ? 'Close menu' : 'Open menu'}
             aria-expanded={menuOpen}
-            className="w-8 h-8 flex flex-col items-center justify-center gap-1.5 rounded-lg text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+            className="h-9 w-9 rounded-lg text-zinc-500 transition-colors hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800"
           >
-            {/* Three-bar → X animation */}
-            <span className={`block w-4.5 h-px bg-current rounded-full transition-all duration-200 origin-center ${menuOpen ? 'rotate-45 translate-y-[3px]' : ''}`} />
-            <span className={`block w-4.5 h-px bg-current rounded-full transition-all duration-200 ${menuOpen ? 'opacity-0 scale-x-0' : ''}`} />
-            <span className={`block w-4.5 h-px bg-current rounded-full transition-all duration-200 origin-center ${menuOpen ? '-rotate-45 -translate-y-[3px]' : ''}`} />
+            <span className="relative mx-auto block h-5 w-5 overflow-visible">
+              {/* Three-bar → X animation */}
+              <span
+                className={`absolute left-0 top-[3px] block h-px w-5 rounded-full bg-current transition-all duration-200 origin-center ${
+                  menuOpen ? 'translate-y-[6px] rotate-45' : ''
+                }`}
+              />
+              <span
+                className={`absolute left-0 top-[9px] block h-px w-5 rounded-full bg-current transition-all duration-200 ${
+                  menuOpen ? 'opacity-0 scale-x-0' : ''
+                }`}
+              />
+              <span
+                className={`absolute left-0 top-[15px] block h-px w-5 rounded-full bg-current transition-all duration-200 origin-center ${
+                  menuOpen ? '-translate-y-[6px] -rotate-45' : ''
+                }`}
+              />
+            </span>
           </button>
         </div>
       </div>
