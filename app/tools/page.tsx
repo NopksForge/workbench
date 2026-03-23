@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { EmojiCommitSection } from "@/app/components/Tools/emoji";
 import { JsonFormatterSection } from "@/app/components/Tools/json_formatter";
+import { UuidGenSection } from "@/app/components/Tools/uuid_gen";
 
 export const metadata: Metadata = {
   title: "Tools · Workbench",
@@ -29,6 +30,10 @@ export default function ToolsPage() {
 
         <div className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-950 sm:p-8">
           <EmojiCommitSection />
+        </div>
+
+        <div className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-950 sm:p-8">
+          <UuidGenSection />
         </div>
 
         <div className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-950 sm:p-8">
