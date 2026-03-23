@@ -6,7 +6,10 @@ import { usePathname } from "next/navigation";
 import { useEffect, useLayoutEffect, useState } from "react";
 import { ThemeToggle } from "./theme_toggle";
 
-const LINKS = [{ href: "/tools", label: "Tools" }];
+const LINKS = [
+  { href: "/tools", label: "Tools" },
+  { href: "/about", label: "About" }
+];
 
 export default function Navbar() {
   const pathname = usePathname();

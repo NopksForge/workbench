@@ -5,7 +5,7 @@ import { JsonFormatterSection } from "@/app/components/Tools/json_formatter";
 import { UuidGenSection } from "@/app/components/Tools/uuid_gen";
 
 export const metadata: Metadata = {
-  title: "Tools · Workbench",
+  title: "NopksForge · Workbench",
   description: "Small utilities for day-to-day dev work.",
 };
 
