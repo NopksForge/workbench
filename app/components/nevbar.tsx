@@ -44,10 +44,9 @@ export default function Navbar() {
         {/* Wordmark */}
         <Link
           href="/"
-          className="text-sm font-semibold tracking-tight text-zinc-900 dark:text-white hover:opacity-70 transition-opacity"
+          className="text-lg font-semibold tracking-tight text-zinc-900 dark:text-white hover:opacity-70 transition-opacity"
         >
-          Nopks<span className="text-zinc-400 dark:text-red-500">Forge</span>
-          <span className="text-zinc-400"> • workbench</span>
+          Nopks<span className="text-red-500">Forge</span>
         </Link>
 
         {/* Desktop links + theme toggle */}

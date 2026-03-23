@@ -14,12 +14,6 @@ export default function ToolsPage() {
     <div className="flex flex-1 flex-col bg-zinc-50 font-sans dark:bg-black">
       <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-10 px-4 py-10 sm:px-6 lg:px-8">
         <header className="space-y-2">
-          <Link
-            href="/"
-            className="inline-flex text-sm text-zinc-500 underline-offset-4 hover:text-zinc-800 hover:underline dark:text-zinc-400 dark:hover:text-zinc-200"
-          >
-            ← Home
-          </Link>
           <h1 className="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-50">
             Dev tools
           </h1>
