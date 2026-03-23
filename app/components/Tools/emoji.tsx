@@ -218,7 +218,7 @@ export function CommitEmojiButton({
       className="group flex flex-col items-center justify-items-center gap-1 rounded-xl border border-zinc-200 bg-white px-3 py-3 text-center transition hover:border-zinc-300 hover:bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-950 dark:hover:border-zinc-700 dark:hover:bg-zinc-900"
     >
       {copied ? (
-        <span className="flex flex-1 items-center justify-center font-mono text-[10px] text-zinc-400 opacity-0 transition group-hover:opacity-100 dark:text-zinc-500" style={{ minHeight: "2.5rem" }}>
+        <span className="flex flex-1 items-center justify-center font-mono text-[10px] text-zinc-400 opacity-100 transition group-hover:opacity-100 dark:text-zinc-200" style={{ minHeight: "2.5rem" }}>
           Copied
         </span>
       ) : (
