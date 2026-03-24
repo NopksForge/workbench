@@ -1,329 +1,563 @@
-import Image from "next/image";
-import Link from "next/link";
-import { CopyCommandPill } from "@/app/components/copy_command_pill";
+"use client";
 
-type Experience = {
-  role: string;
-  company: string;
-  tag: string[];
-  /** ISO date string (YYYY-MM) */
-  from: string;
-  /** ISO date string or "present" */
-  to: string;
-  description: string;
-  highlights: string[];
-  bgClass: string;
+import { useState, useRef, useEffect, useCallback } from "react";
+import { CodexPanel } from "@/app/components/composer/codex_panel";
+import { ControlPanel } from "@/app/components/composer/control_panel";
+import { DisplayScreen } from "@/app/components/composer/display_screen";
+import { PowerStatusPanel } from "@/app/components/composer/power_status_panel";
+import { TopHeaderBar } from "@/app/components/composer/top_header_bar";
+import type { CodexEntry } from "@/app/components/composer/types";
+
+/* ═══════════════════════════════════════════════════════════════
+   RESUME DATA MACHINE — Teenage Engineering KO II inspired
+   ═══════════════════════════════════════════════════════════════ */
+
+const RESUME: Record<string, { title: string; lines: string[] }> = {
+  "000001": {
+    title: "SUMMARIES",
+    lines: [
+      "══════════════════════",
+      "  NOPPASAN KERDSOMJIT",
+      "  FULL STACK ENGINEER",
+      "══════════════════════",
+      "",
+      "  Full-stack engineer who ships",
+      "  mission-critical financial",
+      "  services by day and builds",
+      "  absurd side projects by night.",
+      "",
+      "  Clean architecture enthusiast,",
+      "  observability nerd, and the",
+      "  guy who built a Discord bot",
+      "  so his team could stop",
+      "  context-switching.",
+      "",
+      "  ▸ LOCATION : Bangkok, Thailand",
+      "  ▸ STATUS   : Building things",
+      "  ▸ COFFEE   : ∞ cups",
+    ],
+  },
+  "010100": {
+    title: "CONTACT",
+    lines: [
+      "══════════════════════",
+      "  CONTACT INFORMATION",
+      "══════════════════════",
+      "",
+      "  ▸ EMAIL",
+      "    noppasan.ksj@gmail.com",
+      "",
+      "  ▸ PHONE",
+      "    +66-65-374-4234",
+      "",
+      "  ▸ GITHUB",
+      "    github.com/NopksForge",
+      "",
+      "  ▸ LINKEDIN",
+      "    linkedin.com/in/noppasan",
+      "    -kerdsomjit-b55297206",
+    ],
+  },
+  "110001": {
+    title: "EXPERIENCE",
+    lines: [
+      "══════════════════════",
+      "  WORK EXPERIENCE",
+      "══════════════════════",
+      "",
+      "  ► FULL STACK ENGINEER",
+      "    Arise by INFINITAS",
+      "    Nov 2023 — Present",
+      "    ─────────────────────────",
+      "    Mission-critical backend",
+      "    services for Thailand's",
+      "    premier financial apps —",
+      "    Paotang, Krungthai NEXT,",
+      "    and Clicx Bank.",
+      "",
+      "    → OIDC auth microservices",
+      "      for Paotang — improved",
+      "      login reliability.",
+      "    → High-availability loan",
+      "      processing for Clicx",
+      "      Bank and Krungthai NEXT.",
+      "    → Go + Redis + PostgreSQL",
+      "      Clean Architecture.",
+      "    → Grafana observability;",
+      "      Docker, K8s, Helm CI/CD.",
+      "    → Internal Discord bot for",
+      "      test triggers & status.",
+      "",
+      "  ► SOFTWARE ENGINEER",
+      "    Toyota Tsusho DENSO",
+      "    Electronics",
+      "    Jul 2022 — Oct 2023",
+      "    ─────────────────────────",
+      "    Automotive ECU embedded",
+      "    software & internal tools.",
+      "",
+      "    → Automated MATLAB tooling",
+      "      cut man-hours by 60%.",
+      "    → Model-based software with",
+      "      Japanese engineering teams.",
+      '    → Won "Best Developer" in',
+      "      company kaizen awards.",
+    ],
+  },
+  "000101": {
+    title: "SKILLS",
+    lines: [
+      "══════════════════════",
+      "  TECHNICAL SKILLS",
+      "══════════════════════",
+      "",
+      "  ▸ LANGUAGES",
+      "    Golang · TypeScript · SQL · C",
+      "",
+      "  ▸ FRAMEWORKS",
+      "    Next.js · React",
+      "",
+      "  ▸ INFRASTRUCTURE",
+      "    Docker · Kubernetes · Helm",
+      "",
+      "  ▸ DATA",
+      "    PostgreSQL · Redis · Kafka",
+      "",
+      "  ▸ CLOUD",
+      "    GCP · AWS",
+      "",
+      "  ▸ MONITORING",
+      "    Grafana · K6",
+      "",
+      "  ▸ PRACTICES",
+      "    Clean Architecture",
+      "    Agile / Scrum",
+      "    CI/CD · Observability",
+    ],
+  },
+  "101010": {
+    title: "INTERESTING INFO",
+    lines: [
+      "══════════════════════",
+      "  INTERESTING INFO",
+      "══════════════════════",
+      "",
+      "  ▸ EDUCATION",
+      "    King Mongkut's University",
+      "    of Technology Thonburi",
+      "    B.Eng. Control System &",
+      "    Instrumentation",
+      "    GPA 3.53 / 4.00",
+      "    2nd class honors",
+      "    Graduated June 2022",
+      "",
+      "  ▸ ON AI & BUILDING THINGS",
+      "    ─────────────────",
+      "    Innovation can't be",
+      "    un-invented. The world",
+      "    changes every single day",
+      "    and it's impossible to",
+      "    chase all of it — but",
+      "    I try my best.",
+      "",
+      "    AI lets me ship ideas at",
+      "    a speed I never had before.",
+      "    I think fast, break things",
+      "    along the way, and fix",
+      "    them just as fast.",
+      "",
+      "    My take: treat AI as a",
+      "    multiplier, not a replace-",
+      "    ment. The engineer who",
+      "    understands the system",
+      "    will always outpace the",
+      "    one who only copies the",
+      "    output.",
+    ],
+  },
 };
 
-const EXPERIENCES: Experience[] = [
-  {
-    role: "Full Stack Engineer",
-    company: "Arise by INFINITAS",
-    tag: ["Fintech", "Go", "Microservices", "K8s"],
-    from: "2023-11",
-    to: "present",
-    description:
-      "Mission-critical backend services for Thailand's premier financial apps — Paotang, Krungthai NEXT, and Clicx Bank.",
-    highlights: [
-      "OIDC auth microservices for Paotang — improved login reliability.",
-      "High-availability loan processing for Clicx Bank and Krungthai NEXT.",
-      "Go + Redis + PostgreSQL services following Clean Architecture.",
-      "Production observability via Grafana; CI/CD with Docker, K8s, Helm.",
-      "Built an internal Discord bot for test triggers and service status.",
-    ],
-    bgClass:
-      "bg-gradient-to-br from-white via-emerald-50 to-teal-100/80 dark:from-zinc-950 dark:via-emerald-950/25 dark:to-teal-950/20",
-  },
-  {
-    role: "Software Engineer",
-    company: "Toyota Tsusho DENSO Electronics",
-    tag: ["Automotive", "Embedded", "MATLAB", "C"],
-    from: "2022-07",
-    to: "2023-10",
-    description:
-      "Automotive ECU embedded software and internal tooling to boost engineering efficiency.",
-    highlights: [
-      "Automated MATLAB tooling that cut data-extraction man-hours by 60%.",
-      "Model-based automotive software with Japanese engineering teams.",
-      'Won "Best Developer" in the company kaizen awards.',
-    ],
-    bgClass:
-      "bg-gradient-to-br from-white via-amber-50 to-orange-100/80 dark:from-zinc-950 dark:via-amber-950/20 dark:to-orange-950/20",
-  },
+const NOT_FOUND_LINES = [
+  "══════════════════════",
+  "  ERROR 404",
+  "══════════════════════",
+  "",
+  "  INVALID CODEX ENTRY",
+  "",
+  "  The combination you entered",
+  "  does not match any known",
+  "  data record in the system.",
+  "",
+  "  VALID CODES:",
+  "  000001 → summaries",
+  "  010100 → contact",
+  "  110001 → experience",
+  "  000101 → skills",
+  "  101010 → interesting info",
 ];
 
-function totalExperienceLabel(experiences: Experience[]): string {
-  let months = 0;
-  for (const exp of experiences) {
-    const [fy, fm] = exp.from.split("-").map(Number);
-    const to =
-      exp.to === "present"
-        ? new Date()
-        : new Date(Number(exp.to.split("-")[0]), Number(exp.to.split("-")[1]) - 1);
-    const fromDate = new Date(fy, fm - 1);
-    months += Math.max(
-      0,
-      (to.getFullYear() - fromDate.getFullYear()) * 12 +
-        (to.getMonth() - fromDate.getMonth()),
-    );
-  }
-  const years = Math.round(months / 12);
-  return years < 1 ? `${months} mo` : `~${years} yrs`;
+const BOOT_LINES = [
+  "  SYSTEM ONLINE",
+  "  ─────────────────",
+  "  128 MB SAMPLER COMPOSER",
+  "  RESUME DATA MACHINE v1.0",
+  "",
+  "  SELECT CODEX ENTRY",
+  "  DRAG EXECUTE TO LOAD",
+  "  OR ENTER LAUNCH CODE",
+  "",
+  "  ▸ READY",
+];
+
+const CODEX: CodexEntry[] = [
+  { code: "000001", top: "0 0 0", bot: "0 0 1", label: "summaries\n" },
+  { code: "010100", top: "0 1 0", bot: "1 0 0", label: "contact" },
+  { code: "110001", top: "1 1 0", bot: "0 0 1", label: "experience" },
+  { code: "000101", top: "0 0 0", bot: "1 0 1", label: "skills" },
+  { code: "101010", top: "1 0 1", bot: "0 1 0", label: "education" },
+];
+
+function clamp(v: number, min: number, max: number) {
+  return Math.max(min, Math.min(max, v));
 }
 
-function formatRange(from: string, to: string): string {
-  const fmt = (d: string) => {
-    const [y, m] = d.split("-");
-    const names = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-    return `${names[Number(m) - 1]} ${y}`;
-  };
-  return `${fmt(from)} — ${to === "present" ? "Present" : fmt(to)}`;
+function codeToBits(code: string): number[] {
+  const bits = code.split("").map((c) => (c === "1" ? 1 : 0));
+  while (bits.length < 6) bits.push(0);
+  return bits.slice(0, 6);
 }
 
 export default function AboutPage() {
+  const [powered, setPowered] = useState(false);
+  const [activeCode, setActiveCode] = useState("000000");
+  const [screenLines, setScreenLines] = useState<string[]>([]);
+  const [sizeAngle, setSizeAngle] = useState(90);
+  const [colorAngle, setColorAngle] = useState(90);
+  const [scrollPos, setScrollPos] = useState(0);
+  const [autoScroll, setAutoScroll] = useState(false);
+  const [autoExec, setAutoExec] = useState(false);
+  const [launchCode, setLaunchCode] = useState("");
+  const [leverPos, setLeverPos] = useState(0);
+  const [executed, setExecuted] = useState(false);
+  const [lastExecutedCode, setLastExecutedCode] = useState<string | null>(null);
+  const [padBits, setPadBits] = useState<number[]>([0, 0, 0, 0, 0, 0]);
+
+  const screenRef = useRef<HTMLDivElement>(null);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const autoScrollTimer = useRef<ReturnType<typeof setInterval> | null>(null);
+  const leverDrag = useRef({ active: false });
+  const leverTrackRef = useRef<HTMLDivElement>(null);
+  const sizeDrag = useRef({ active: false, startY: 0, startA: 0 });
+  const colorDrag = useRef({ active: false, startY: 0, startA: 0 });
+  const sliderDrag = useRef({ active: false });
+  const sliderTrackRef = useRef<HTMLDivElement>(null);
+  const prevCodeRef = useRef(activeCode);
+
+  const fontSize = 10 + (sizeAngle / 270) * 10;
+  const hue = (colorAngle / 270) * 360;
+  const screenColor = `hsl(${hue}, 80%, 65%)`;
+
+  /* ── Execute data load ── */
+  const executeCode = useCallback(
+    (code: string) => {
+      if (!powered) return;
+      if (timerRef.current) clearInterval(timerRef.current);
+      const data = RESUME[code];
+      const src = data ? [...data.lines] : [...NOT_FOUND_LINES];
+      setScreenLines([]);
+      setScrollPos(0);
+      setExecuted(true);
+      setLastExecutedCode(code);
+      const idx = { v: 0 };
+      timerRef.current = setInterval(() => {
+        if (idx.v < src.length) {
+          setScreenLines((p) => [...p, src[idx.v]]);
+          idx.v++;
+        } else {
+          if (timerRef.current) clearInterval(timerRef.current);
+          timerRef.current = null;
+        }
+      }, 35);
+    },
+    [powered],
+  );
+
+  /* ── Power toggle ── */
+  const togglePower = useCallback(() => {
+    setPowered((prev) => {
+      if (!prev) {
+        setScreenLines([]);
+        setExecuted(false);
+        setLastExecutedCode(null);
+        const idx = { v: 0 };
+        const boot = [...BOOT_LINES];
+        if (timerRef.current) clearInterval(timerRef.current);
+        timerRef.current = setInterval(() => {
+          if (idx.v < boot.length) {
+            setScreenLines((p) => [...p, boot[idx.v]]);
+            idx.v++;
+          } else {
+            if (timerRef.current) clearInterval(timerRef.current);
+            timerRef.current = null;
+          }
+        }, 60);
+      } else {
+        if (timerRef.current) clearInterval(timerRef.current);
+        if (autoScrollTimer.current) clearInterval(autoScrollTimer.current);
+        timerRef.current = null;
+        autoScrollTimer.current = null;
+        setScreenLines([]);
+        setScrollPos(0);
+        setAutoScroll(false);
+        setAutoExec(false);
+        setExecuted(false);
+        setLastExecutedCode(null);
+        setLeverPos(0);
+        setPadBits([0, 0, 0, 0, 0, 0]);
+        setActiveCode("000000");
+        setLaunchCode("");
+      }
+      return !prev;
+    });
+  }, []);
+
+  /* ── Auto-exec when code changes ── */
+  useEffect(() => {
+    if (activeCode !== prevCodeRef.current) {
+      prevCodeRef.current = activeCode;
+      if (autoExec && powered) {
+        executeCode(activeCode);
+      }
+    }
+  }, [activeCode, autoExec, powered, executeCode]);
+
+  /* ── Auto-exec when toggle turned on ── */
+  useEffect(() => {
+    if (autoExec && powered && executed) {
+      executeCode(activeCode);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [autoExec]);
+
+  /* ── Auto-scroll ── */
+  useEffect(() => {
+    if (autoScrollTimer.current) {
+      clearInterval(autoScrollTimer.current);
+      autoScrollTimer.current = null;
+    }
+    if (!autoScroll || !powered) return;
+    autoScrollTimer.current = setInterval(() => {
+      setScrollPos((p) => (p + 0.004 > 1 ? 0 : p + 0.004));
+    }, 50);
+    return () => {
+      if (autoScrollTimer.current) clearInterval(autoScrollTimer.current);
+    };
+  }, [autoScroll, powered]);
+
+  /* ── Sync scroll position to screen element ── */
+  useEffect(() => {
+    if (!screenRef.current) return;
+    const el = screenRef.current;
+    const maxS = Math.max(0, el.scrollHeight - el.clientHeight);
+    el.scrollTop = scrollPos * maxS;
+  }, [scrollPos, screenLines]);
+
+  /* ── Cleanup on unmount ── */
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+      if (autoScrollTimer.current) clearInterval(autoScrollTimer.current);
+    };
+  }, []);
+
+  /* ── Lever handlers ── */
+  const onLeverDown = useCallback(
+    (e: React.PointerEvent) => {
+      if (!powered) return;
+      e.preventDefault();
+      (e.target as HTMLElement).setPointerCapture(e.pointerId);
+      leverDrag.current.active = true;
+    },
+    [powered],
+  );
+  const onLeverMove = useCallback((e: React.PointerEvent) => {
+    if (!leverDrag.current.active || !leverTrackRef.current) return;
+    const rect = leverTrackRef.current.getBoundingClientRect();
+    const trackH = rect.height - 44;
+    const relY = e.clientY - rect.top - 22;
+    setLeverPos(clamp(relY / trackH, 0, 1));
+  }, []);
+  const onLeverUp = useCallback(() => {
+    if (!leverDrag.current.active) return;
+    leverDrag.current.active = false;
+    if (leverPos > 0.8) executeCode(activeCode);
+    setLeverPos(0);
+  }, [leverPos, executeCode, activeCode]);
+
+  /* ── Size knob handlers ── */
+  const onSizeDown = useCallback(
+    (e: React.PointerEvent) => {
+      if (!powered) return;
+      e.preventDefault();
+      (e.target as HTMLElement).setPointerCapture(e.pointerId);
+      sizeDrag.current = { active: true, startY: e.clientY, startA: sizeAngle };
+    },
+    [powered, sizeAngle],
+  );
+  const onSizeMove = useCallback((e: React.PointerEvent) => {
+    if (!sizeDrag.current.active) return;
+    const delta = sizeDrag.current.startY - e.clientY;
+    setSizeAngle(clamp(sizeDrag.current.startA + delta * 1.5, 0, 270));
+  }, []);
+  const onSizeUp = useCallback(() => {
+    sizeDrag.current.active = false;
+  }, []);
+
+  /* ── Color knob handlers ── */
+  const onColorDown = useCallback(
+    (e: React.PointerEvent) => {
+      if (!powered) return;
+      e.preventDefault();
+      (e.target as HTMLElement).setPointerCapture(e.pointerId);
+      colorDrag.current = {
+        active: true,
+        startY: e.clientY,
+        startA: colorAngle,
+      };
+    },
+    [powered, colorAngle],
+  );
+  const onColorMove = useCallback((e: React.PointerEvent) => {
+    if (!colorDrag.current.active) return;
+    const delta = colorDrag.current.startY - e.clientY;
+    setColorAngle(clamp(colorDrag.current.startA + delta * 1.5, 0, 270));
+  }, []);
+  const onColorUp = useCallback(() => {
+    colorDrag.current.active = false;
+  }, []);
+
+  /* ── Slider handlers ── */
+  const updateSlider = useCallback((e: React.PointerEvent) => {
+    if (!sliderTrackRef.current) return;
+    const rect = sliderTrackRef.current.getBoundingClientRect();
+    const relY = e.clientY - rect.top;
+    setScrollPos(clamp(relY / rect.height, 0, 1));
+  }, []);
+  const onSliderDown = useCallback(
+    (e: React.PointerEvent) => {
+      if (!powered) return;
+      e.preventDefault();
+      (e.target as HTMLElement).setPointerCapture(e.pointerId);
+      sliderDrag.current.active = true;
+      updateSlider(e);
+    },
+    [powered, updateSlider],
+  );
+  const onSliderMove = useCallback(
+    (e: React.PointerEvent) => {
+      if (!sliderDrag.current.active) return;
+      updateSlider(e);
+    },
+    [updateSlider],
+  );
+  const onSliderUp = useCallback(() => {
+    sliderDrag.current.active = false;
+  }, []);
+
+  /* ── Pad toggle ── */
+  const togglePad = useCallback(
+    (index: number) => {
+      if (!powered) return;
+      const next = [...padBits];
+      next[index] = next[index] === 1 ? 0 : 1;
+      setPadBits(next);
+      const code = next.join("");
+      setActiveCode(code);
+      setLaunchCode(code);
+    },
+    [powered, padBits],
+  );
+
+  const statusText = !powered
+    ? "OFFLINE"
+    : !executed || !lastExecutedCode
+      ? "AWAITING INPUT"
+      : RESUME[lastExecutedCode]
+        ? `LOADED: ${RESUME[lastExecutedCode].title}`
+        : "ERR: UNKNOWN CODE";
+
+  const executeLeverTwinkle =
+    powered &&
+    Object.prototype.hasOwnProperty.call(RESUME, activeCode) &&
+    activeCode !== lastExecutedCode;
+
   return (
-    <div className="flex min-h-[calc(100vh-0px)] flex-col bg-zinc-50 font-sans text-zinc-900 dark:bg-black dark:text-zinc-50">
-      <main className="mx-auto w-full max-w-5xl flex-1 px-4 pb-16 pt-10 sm:px-6 sm:pb-20 sm:pt-14">
-        {/* ── Hero ── */}
-        <section className="rounded-3xl border border-zinc-200 bg-white px-6 py-10 shadow-sm dark:border-zinc-800 dark:bg-zinc-950 sm:px-10 sm:py-14">
-          <p className="text-sm font-medium text-zinc-500 dark:text-zinc-400">
-            / about
-          </p>
+    <div className="flex min-h-[calc(100vh-48px)] items-start justify-center overflow-x-auto bg-zinc-950 p-3 sm:items-center sm:p-6">
+      <style>{`
+        @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+        @keyframes bootFlash { 0%{opacity:0} 30%{opacity:1} 60%{opacity:.4} 100%{opacity:1} }
+        .cursor-blink { animation: blink 1s step-end infinite; }
+        .screen-boot { animation: bootFlash .4s ease-out; }
+      `}</style>
 
-          <div className="mt-3 flex items-center gap-8">
-            <div
-              className="shrink-0 rounded-full p-4 shadow-lg"
-              style={{
-                background: "linear-gradient(135deg, #ef4444bb 0%, #eab308bb 33%, #22d3eabb 66%, #6366f1bb 100%)",
-                backgroundSize: "300% 300%",
-                animation: "colorLoop 6s linear infinite"
-              }}
-            >
-            <style>
-              {`
-                @keyframes colorLoop {
-                  0% { background-position: 0% 50%; }
-                  50% { background-position: 100% 50%; }
-                  100% { background-position: 0% 50%; }
-                }
-              `}
-            </style>
-              <Image
-                src="/arm_icon.webp"
-                alt="Noppasan Kerdsomjit avatar picture"
-                width={96}
-                height={96}
-                className="h-20 w-20 object-cover sm:h-24 sm:w-24"
-              />
-            </div>
-            <h1 className="font-semibold tracking-tight text-4xl sm:text-6xl">
-              Noppasan
-              <br />
-              <span className="text-zinc-400 dark:text-zinc-500">
-                Kerdsomjit
-              </span>
-            </h1>
-          </div>
+      <div
+        className="relative min-w-[740px] max-w-[860px] select-none overflow-hidden rounded-2xl bg-zinc-300 shadow-[0_24px_80px_rgba(0,0,0,.6),inset_0_1px_0_rgba(255,255,255,.06)]"
+      >
+        <TopHeaderBar />
 
-          <p className="mt-6 mx-3 text-base text-zinc-600 dark:text-zinc-400 sm:text-lg">
-            Full-stack engineer who ships mission-critical financial services by
-            day and builds absurd side projects by night. Clean architecture
-            enthusiast, observability nerd, and the guy who built a Discord bot
-            so his team could stop context-switching.
-          </p>
+        <div className="flex gap-4 p-4 pb-3">
+          <DisplayScreen
+            powered={powered}
+            fontSize={fontSize}
+            screenColor={screenColor}
+            screenLines={screenLines}
+            screenRef={screenRef}
+          />
+          <PowerStatusPanel
+            powered={powered}
+            statusText={statusText}
+            onTogglePower={togglePower}
+          />
+        </div>
 
-          {/* ── Contact bar ── */}
-          <div className="mt-8 flex flex-wrap gap-2">
-            <CopyCommandPill
-              display="$ echo noppasan.ksj@gmail.com"
-              valueToCopy="noppasan.ksj@gmail.com"
-              toastMessage="Email copied"
-            />
-            <CopyCommandPill
-              display="$ call +66-65-374-4234"
-              valueToCopy="+66653744234"
-              toastMessage="Phone copied"
-            />
-            <Link
-              href="https://github.com/NopksForge"
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex items-center justify-center rounded-2xl border border-zinc-200 bg-white px-4 py-2 font-mono text-xs text-zinc-800 transition hover:bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-200 dark:hover:bg-zinc-900"
-            >
-              $ open github.com/NopksForge
-            </Link>
-            <Link
-              href="https://www.linkedin.com/in/noppasan-kerdsomjit-b55297206/"
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex items-center justify-center rounded-2xl border border-zinc-200 bg-white px-4 py-2 font-mono text-xs text-zinc-800 transition hover:bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-200 dark:hover:bg-zinc-900"
-            >
-              $ open linkedin/noppasan
-            </Link>
-          </div>
-        </section>
-
-        {/* ── Quick stats row ── */}
-        <section className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3">
-          {[
-            { value: totalExperienceLabel(EXPERIENCES), label: "shipping code" },
-            { value: "BKK, Thailand", label: "location" },
-            { value: "∞", label: "Cups of coffee"},
-          ].map((s) => (
-            <div
-              key={s.label}
-              className="rounded-2xl border border-zinc-200 bg-white p-4 text-center shadow-sm dark:border-zinc-800 dark:bg-zinc-950"
-            >
-              <p className="text-2xl font-semibold tracking-tight">
-                {s.value}
-              </p>
-              <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
-                {s.label}
-              </p>
-            </div>
-          ))}
-        </section>
-
-        {/* ── Skill cloud ── */}
-        <section className="mt-6 rounded-3xl border border-zinc-200 bg-white p-5 shadow-sm dark:border-zinc-800 dark:bg-zinc-950 sm:p-6">
-          <h2 className="text-base font-semibold">
-            Tech I Actually Use
-          </h2>
-
-          <div className="mt-4 flex flex-wrap gap-2">
-            {[
-              "Golang",
-              "TypeScript",
-              "SQL",
-              "Next.js",
-              "Redis",
-              "PostgreSQL",
-              "Docker",
-              "Kubernetes",
-              "Helm",
-              "Kafka",
-              "Grafana",
-              "K6",
-              "GCP",
-              "AWS",
-              "Git",
-              "Agile / Scrum",
-            ].map((t) => (
-              <span
-                key={t}
-                className="rounded-full border border-zinc-200 bg-zinc-50 px-3 py-1 text-xs font-medium text-zinc-700 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-200"
-              >
-                {t}
-              </span>
-            ))}
-          </div>
-        </section>
-
-        {/* ── Experience ── */}
-        <section className="mt-6 space-y-4">
-          <div className="flex items-end justify-between gap-3">
-            <h2 className="text-lg font-semibold tracking-tight">Experience</h2>
-          </div>
-
-          {EXPERIENCES.map((exp) => (
-            <article
-              key={exp.from}
-              className={`relative overflow-hidden rounded-3xl border border-zinc-200 px-5 py-8 shadow-sm dark:border-zinc-800 sm:px-8 sm:py-10 ${exp.bgClass}`}
-            >
-              <div
-                className="pointer-events-none absolute inset-0 opacity-60"
-                aria-hidden
-              >
-                <div className="absolute -left-24 -top-24 h-96 w-96 rounded-full bg-sky-400/15 blur-3xl dark:bg-sky-500/10" />
-                <div className="absolute -bottom-28 -right-24 h-96 w-96 rounded-full bg-indigo-500/15 blur-3xl dark:bg-indigo-500/10" />
-              </div>
-
-              <div className="relative flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
-                <div className="max-w-2xl space-y-3">
-                  <div className="inline-flex items-center gap-3 rounded-full border border-zinc-200 bg-zinc-50/80 py-1 pl-1 pr-2 text-xs font-medium text-zinc-700 dark:border-zinc-800 dark:bg-zinc-900/80 dark:text-zinc-200">
-                    {exp.to === "present" ? (
-                      <span className="inline-flex items-center rounded-full bg-emerald-500/10 px-2 py-0.5 text-[11px] font-semibold text-emerald-700 ring-1 ring-emerald-500/20 dark:text-emerald-200">
-                        <span className="mr-1 inline-block h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_6px_2px_rgba(16,185,129,0.6)] dark:bg-emerald-300 dark:shadow-[0_0_6px_2px_rgba(110,231,183,0.7)]" />
-                        NOW
-                      </span>
-                    ) : (
-                      <span className="inline-flex items-center rounded-full bg-zinc-200/60 px-2 py-0.5 text-[11px] font-semibold text-zinc-600 ring-1 ring-zinc-300/40 dark:bg-zinc-800/60 dark:text-zinc-300 dark:ring-zinc-700/40">
-                        PAST
-                      </span>
-                    )}
-                    <span>
-                      {exp.tag.map((t, idx) => (
-                        <span key={t}>
-                          {idx > 0 ? (
-                            <span className="mx-1 font-extrabold text-zinc-400 dark:text-zinc-500">
-                              ·
-                            </span>
-                          ) : null}
-                          <span>{t}</span>
-                        </span>
-                      ))}
-                    </span>
-                  </div>
-
-                  <h3 className="text-3xl font-semibold tracking-tight sm:text-4xl">
-                    {exp.role}
-                  </h3>
-
-                  <p className="text-sm text-zinc-500 dark:text-zinc-400">
-                    {exp.company} · {formatRange(exp.from, exp.to)}
-                  </p>
-
-                  <p className="max-w-xl text-sm text-zinc-600 dark:text-zinc-400 sm:text-base">
-                    {exp.description}
-                  </p>
-
-                  <ul className="space-y-1 text-sm text-zinc-600 dark:text-zinc-400">
-                    {exp.highlights.map((h) => (
-                      <li key={h}>→ {h}</li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-            </article>
-          ))}
-        </section>
-
-        {/* ── Education ── */}
-        <section className="mt-6 rounded-3xl border border-zinc-200 bg-white p-5 shadow-sm dark:border-zinc-800 dark:bg-zinc-950 sm:p-6">
-          <h2 className="text-base font-semibold">Education</h2>
-          <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
-            <span className="font-medium text-zinc-900 dark:text-zinc-100">
-              King Mongkut&apos;s University of Technology Thonburi
-            </span>
-            <br />
-            B.Eng. Control System & Instrumentation — GPA 3.53 / 4.00 (second
-            class honors) · June 2022
-          </p>
-        </section>
-
-        {/* ── Thoughts on AI ── */}
-        <section className="mt-6 rounded-3xl border border-dashed border-zinc-300 bg-white px-6 py-8 dark:border-zinc-700 dark:bg-zinc-950 sm:px-8 sm:py-10">
-          <p className="text-xs font-medium tracking-widest text-zinc-400 uppercase dark:text-zinc-500">
-            Hot take
-          </p>
-          <h2 className="mt-2 text-2xl font-semibold tracking-tight sm:text-3xl">
-            On AI & Building Things
-          </h2>
-          <p className="mt-4 max-w-2xl text-sm leading-relaxed text-zinc-600 dark:text-zinc-400 sm:text-base">
-            Innovation can&apos;t be un-invented. The world changes every single
-            day and it&apos;s impossible to chase all of it — but I try my best.
-            AI lets me ship ideas at a speed I never had before. I think fast,
-            break things along the way, and fix them just as fast. But none of
-            that works without solid fundamentals — knowing why the code works
-            matters more than getting it to compile.
-          </p>
-          <p className="mt-3 max-w-2xl text-sm leading-relaxed text-zinc-600 dark:text-zinc-400 sm:text-base">
-            My take: treat AI as a multiplier, not a replacement. The engineer
-            who understands the system will always outpace the one who only
-            copies the output.
-          </p>
-        </section>
-      </main>
+        <div className="flex justify-between gap-2 px-4 pb-4">
+          <ControlPanel
+            powered={powered}
+            autoScroll={autoScroll}
+            autoExec={autoExec}
+            scrollPos={scrollPos}
+            isSliderDragging={sliderDrag.current.active}
+            sliderTrackRef={sliderTrackRef}
+            leverPos={leverPos}
+            isLeverDragging={leverDrag.current.active}
+            leverTrackRef={leverTrackRef}
+            sizeAngle={sizeAngle}
+            colorAngle={colorAngle}
+            padBits={padBits}
+            onLeverDown={onLeverDown}
+            onLeverMove={onLeverMove}
+            onLeverUp={onLeverUp}
+            onToggleAutoScroll={() => powered && setAutoScroll((p) => !p)}
+            onToggleAutoExec={() => powered && setAutoExec((p) => !p)}
+            onSizeDown={onSizeDown}
+            onSizeMove={onSizeMove}
+            onSizeUp={onSizeUp}
+            onColorDown={onColorDown}
+            onColorMove={onColorMove}
+            onColorUp={onColorUp}
+            onTogglePad={togglePad}
+            onSliderDown={onSliderDown}
+            onSliderMove={onSliderMove}
+            onSliderUp={onSliderUp}
+            executeLeverTwinkle={executeLeverTwinkle}
+          />
+          <CodexPanel
+            codexEntries={CODEX}
+            activeCode={activeCode}
+            powered={powered}
+          />
+        </div>
+      </div>
     </div>
   );
 }
