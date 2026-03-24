@@ -15,18 +15,24 @@ export function DisplayScreen({
   screenLines,
   screenRef,
 }: DisplayScreenProps) {
+  /** Fixed LCD column width so font-size changes only reflow text, not the bezel. */
+  const LCD_WIDTH_PX = 500;
+
   return (
-    <div className="flex-1">
+    <div
+      className="flex shrink-0 flex-col"
+      style={{ width: LCD_WIDTH_PX, maxWidth: "100%" }}
+    >
       <p className="mb-1.5 text-xs font-bold tracking-widest text-zinc-400">RESUME</p>
       <div
-        className="overflow-hidden rounded-lg p-3"
+        className="w-full overflow-hidden rounded-lg p-3"
         style={{
           background: "linear-gradient(160deg, #c8c8c8, #a8a8a8 40%, #b8b8b8)",
           boxShadow: "0 2px 8px rgba(0,0,0,.25)",
         }}
       >
         <div
-          className={`relative overflow-hidden rounded ${powered ? "screen-boot" : ""}`}
+          className={`relative w-full overflow-hidden rounded ${powered ? "screen-boot" : ""}`}
           style={{
             background: "#0c1210",
             boxShadow: "inset 0 2px 8px rgba(0,0,0,.6)",
@@ -34,12 +40,13 @@ export function DisplayScreen({
         >
           <div
             ref={screenRef}
-            className="overflow-hidden whitespace-pre p-3 font-mono leading-relaxed"
+            className="box-border max-w-full overflow-x-hidden overflow-y-hidden whitespace-pre-wrap p-3 font-mono leading-relaxed wrap-anywhere"
             style={{
               fontSize: `${fontSize}px`,
               color: powered ? screenColor : "transparent",
               textShadow: powered ? `0 0 6px ${screenColor}40` : "none",
               height: 200,
+              width: "100%",
             }}
           >
             {screenLines.map((line, i) => (

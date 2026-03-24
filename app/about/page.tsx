@@ -21,16 +21,9 @@ const RESUME: Record<string, { title: string; lines: string[] }> = {
       "  FULL STACK ENGINEER",
       "══════════════════════",
       "",
-      "  Full-stack engineer who ships",
-      "  mission-critical financial",
-      "  services by day and builds",
-      "  absurd side projects by night.",
+      "  Full-stack engineer building mission-critical financial apps by day, odd side projects by night.",
       "",
-      "  Clean architecture enthusiast,",
-      "  observability nerd, and the",
-      "  guy who built a Discord bot",
-      "  so his team could stop",
-      "  context-switching.",
+      "  Loves clean architectures, builds monitoring tools, even made a Discord bot to cut context-switching.",
       "",
       "  ▸ LOCATION : Bangkok, Thailand",
       "  ▸ STATUS   : Building things",
@@ -68,40 +61,24 @@ const RESUME: Record<string, { title: string; lines: string[] }> = {
       "  ► FULL STACK ENGINEER",
       "    Arise by INFINITAS",
       "    Nov 2023 — Present",
-      "    ─────────────────────────",
-      "    Mission-critical backend",
-      "    services for Thailand's",
-      "    premier financial apps —",
-      "    Paotang, Krungthai NEXT,",
-      "    and Clicx Bank.",
+      "    ─────────────────",
+      "    Critical backend for Thailand's top financial platforms: Paotang, Krungthai NEXT, Clicx Bank.",
       "",
-      "    → OIDC auth microservices",
-      "      for Paotang — improved",
-      "      login reliability.",
-      "    → High-availability loan",
-      "      processing for Clicx",
-      "      Bank and Krungthai NEXT.",
-      "    → Go + Redis + PostgreSQL",
-      "      Clean Architecture.",
-      "    → Grafana observability;",
-      "      Docker, K8s, Helm CI/CD.",
-      "    → Internal Discord bot for",
-      "      test triggers & status.",
+      "    → OIDC auth for Paotang login reliability.",
+      "    → Loan processing for Clicx & Krungthai NEXT.",
+      "    → Go, Redis, PostgreSQL, Clean Architecture.",
+      "    → Grafana, Docker, K8s, Helm CI/CD.",
+      "    → Discord bot for internal testing.",
       "",
       "  ► SOFTWARE ENGINEER",
-      "    Toyota Tsusho DENSO",
-      "    Electronics",
+      "    Toyota Tsusho DENSO Electronics",
       "    Jul 2022 — Oct 2023",
-      "    ─────────────────────────",
-      "    Automotive ECU embedded",
-      "    software & internal tools.",
+      "    ─────────────────",
+      "    Automotive ECU embedded software & internal tools.",
       "",
-      "    → Automated MATLAB tooling",
-      "      cut man-hours by 60%.",
-      "    → Model-based software with",
-      "      Japanese engineering teams.",
-      '    → Won "Best Developer" in',
-      "      company kaizen awards.",
+      "    → Automated MATLAB tooling (cut man-hours by 60%)",
+      "    → Model-based software with Japanese engineering teams",
+      '    → Won "Best Developer" in company kaizen awards',
     ],
   },
   "000101": {
@@ -145,34 +122,13 @@ const RESUME: Record<string, { title: string; lines: string[] }> = {
       "  ▸ EDUCATION",
       "    King Mongkut's University",
       "    of Technology Thonburi",
-      "    B.Eng. Control System &",
-      "    Instrumentation",
-      "    GPA 3.53 / 4.00",
-      "    2nd class honors",
+      "    ",
+      "    B.Eng. Control System &Instrumentation",
+      "    ",
+      "    GPA 3.53 / 4.00 (2nd class honors)",
+      "    ",
       "    Graduated June 2022",
       "",
-      "  ▸ ON AI & BUILDING THINGS",
-      "    ─────────────────",
-      "    Innovation can't be",
-      "    un-invented. The world",
-      "    changes every single day",
-      "    and it's impossible to",
-      "    chase all of it — but",
-      "    I try my best.",
-      "",
-      "    AI lets me ship ideas at",
-      "    a speed I never had before.",
-      "    I think fast, break things",
-      "    along the way, and fix",
-      "    them just as fast.",
-      "",
-      "    My take: treat AI as a",
-      "    multiplier, not a replace-",
-      "    ment. The engineer who",
-      "    understands the system",
-      "    will always outpace the",
-      "    one who only copies the",
-      "    output.",
     ],
   },
 };
@@ -271,7 +227,8 @@ export default function AboutPage() {
       const idx = { v: 0 };
       timerRef.current = setInterval(() => {
         if (idx.v < src.length) {
-          setScreenLines((p) => [...p, src[idx.v]]);
+          const line = src[idx.v];
+          setScreenLines((p) => [...p, line]);
           idx.v++;
         } else {
           if (timerRef.current) clearInterval(timerRef.current);
@@ -294,7 +251,8 @@ export default function AboutPage() {
         if (timerRef.current) clearInterval(timerRef.current);
         timerRef.current = setInterval(() => {
           if (idx.v < boot.length) {
-            setScreenLines((p) => [...p, boot[idx.v]]);
+            const line = boot[idx.v];
+            setScreenLines((p) => [...p, line]);
             idx.v++;
           } else {
             if (timerRef.current) clearInterval(timerRef.current);
@@ -501,11 +459,11 @@ export default function AboutPage() {
       `}</style>
 
       <div
-        className="relative min-w-[740px] max-w-[860px] select-none overflow-hidden rounded-2xl bg-zinc-300 shadow-[0_24px_80px_rgba(0,0,0,.6),inset_0_1px_0_rgba(255,255,255,.06)]"
+        className="relative w-full min-w-[740px] max-w-[688px] select-none overflow-hidden rounded-2xl bg-zinc-300 shadow-[0_24px_80px_rgba(0,0,0,.6),inset_0_1px_0_rgba(255,255,255,.06)]"
       >
         <TopHeaderBar />
 
-        <div className="flex gap-4 p-4 pb-3">
+        <div className="flex min-w-0 gap-4 p-4 pb-3">
           <DisplayScreen
             powered={powered}
             fontSize={fontSize}
