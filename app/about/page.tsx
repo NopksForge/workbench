@@ -492,7 +492,7 @@ export default function AboutPage() {
     activeCode !== lastExecutedCode;
 
   return (
-    <div className="flex min-h-[calc(100vh-48px)] items-start justify-center overflow-x-auto bg-zinc-950 p-3 sm:items-center sm:p-6">
+    <div className="flex min-h-[calc(100vh-48px)] items-start justify-center overflow-x-auto bg-zinc-50 dark:bg-zinc-950 p-3 sm:items-center sm:p-6">
       <style>{`
         @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
         @keyframes bootFlash { 0%{opacity:0} 30%{opacity:1} 60%{opacity:.4} 100%{opacity:1} }
