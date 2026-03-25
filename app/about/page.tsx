@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from "react";
+import { ClipboardToast } from "@/app/components/clipboard_toast";
 import { CodexPanel } from "@/app/components/composer/codex_panel";
 import { ControlPanel } from "@/app/components/composer/control_panel";
 import { DisplayScreen } from "@/app/components/composer/display_screen";
@@ -47,8 +48,8 @@ const RESUME: Record<string, { title: string; lines: string[] }> = {
       "    github.com/NopksForge",
       "",
       "  ▸ LINKEDIN",
-      "    linkedin.com/in/noppasan",
-      "    -kerdsomjit-b55297206",
+      "    linkedin.com/in/noppasan-kerdsomjit-b55297206",
+      "    ",
     ],
   },
   "110001": {
@@ -120,8 +121,7 @@ const RESUME: Record<string, { title: string; lines: string[] }> = {
       "══════════════════════",
       "",
       "  ▸ EDUCATION",
-      "    King Mongkut's University",
-      "    of Technology Thonburi",
+      "    King Mongkut's University of Technology Thonburi",
       "    ",
       "    B.Eng. Control System &Instrumentation",
       "    ",
@@ -173,6 +173,16 @@ const CODEX: CodexEntry[] = [
   { code: "101010", top: "1 0 1", bot: "0 1 0", label: "education" },
 ];
 
+const COPYABLE_LINES: Record<string, string> = {
+  "noppasan.ksj@gmail.com": "noppasan.ksj@gmail.com",
+  "+66-65-374-4234": "+66-65-374-4234",
+};
+
+const LINK_LINES: Record<string, string> = {
+  "github.com/NopksForge": "https://github.com/NopksForge",
+  "linkedin.com/in/noppasan-kerdsomjit-b55297206": "https://linkedin.com/in/noppasan-kerdsomjit-b55297206",
+};
+
 function clamp(v: number, min: number, max: number) {
   return Math.max(min, Math.min(max, v));
 }
@@ -197,6 +207,8 @@ export default function AboutPage() {
   const [executed, setExecuted] = useState(false);
   const [lastExecutedCode, setLastExecutedCode] = useState<string | null>(null);
   const [padBits, setPadBits] = useState<number[]>([0, 0, 0, 0, 0, 0]);
+  const [toastId, setToastId] = useState<number | null>(null);
+  const [toastMsg, setToastMsg] = useState("");
 
   const screenRef = useRef<HTMLDivElement>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -448,6 +460,12 @@ export default function AboutPage() {
     [powered, padBits],
   );
 
+  const handleLineCopy = useCallback((value: string) => {
+    navigator.clipboard.writeText(value);
+    setToastMsg(`Copied: ${value}`);
+    setToastId(Date.now());
+  }, []);
+
   const statusText = !powered
     ? "OFFLINE"
     : !executed || !lastExecutedCode
@@ -482,6 +500,9 @@ export default function AboutPage() {
             screenColor={screenColor}
             screenLines={screenLines}
             screenRef={screenRef}
+            copyableLines={COPYABLE_LINES}
+            linkLines={LINK_LINES}
+            onLineCopy={handleLineCopy}
           />
           <PowerStatusPanel
             powered={powered}
@@ -528,6 +549,12 @@ export default function AboutPage() {
           />
         </div>
       </div>
+
+      <ClipboardToast
+        id={toastId}
+        message={toastMsg}
+        onDismiss={() => setToastId(null)}
+      />
     </div>
   );
 }

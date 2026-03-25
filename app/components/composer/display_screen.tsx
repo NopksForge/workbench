@@ -1,3 +1,5 @@
+"use client";
+
 import type { RefObject } from "react";
 
 type DisplayScreenProps = {
@@ -6,6 +8,9 @@ type DisplayScreenProps = {
   screenColor: string;
   screenLines: string[];
   screenRef: RefObject<HTMLDivElement | null>;
+  copyableLines?: Record<string, string>;
+  linkLines?: Record<string, string>;
+  onLineCopy?: (value: string) => void;
 };
 
 export function DisplayScreen({
@@ -14,6 +19,9 @@ export function DisplayScreen({
   screenColor,
   screenLines,
   screenRef,
+  copyableLines,
+  linkLines,
+  onLineCopy,
 }: DisplayScreenProps) {
   /** Fixed LCD column width so font-size changes only reflow text, not the bezel. */
   const LCD_WIDTH_PX = 500;
@@ -49,9 +57,39 @@ export function DisplayScreen({
               width: "100%",
             }}
           >
-            {screenLines.map((line, i) => (
-              <div key={i}>{line || "\u00A0"}</div>
-            ))}
+            {screenLines.map((line, i) => {
+              const trimmed = line.trim();
+              const linkUrl = linkLines?.[trimmed];
+              if (linkUrl) {
+                return (
+                  <a
+                    key={i}
+                    href={linkUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block cursor-pointer rounded transition-colors hover:bg-white/10"
+                  >
+                    {line}
+                  </a>
+                );
+              }
+              const copyValue = copyableLines?.[trimmed];
+              if (copyValue && onLineCopy) {
+                return (
+                  <div
+                    key={i}
+                    role="button"
+                    tabIndex={0}
+                    className="cursor-pointer rounded transition-colors hover:bg-white/10"
+                    onClick={() => onLineCopy(copyValue)}
+                    onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") onLineCopy(copyValue); }}
+                  >
+                    {line}
+                  </div>
+                );
+              }
+              return <div key={i}>{line || "\u00A0"}</div>;
+            })}
             {powered && <span className="cursor-blink">█</span>}
           </div>
           <div
