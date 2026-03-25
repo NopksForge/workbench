@@ -5,6 +5,7 @@ import { THEME_STORAGE_KEY } from "@/lib/theme";
 import "./globals.css";
 import Navbar from "./components/nevbar";
 import Footer from "./components/footer";
+import { Analytics } from "@vercel/analytics/next"
 
 /** Runs before paint so `dark` on <html> matches localStorage / system (see Navbar toggle). */
 const themeInitScript = `
@@ -55,6 +56,7 @@ export default function RootLayout({
         <Navbar />
         {children}
         <Footer />
+        <Analytics/>
       </body>
     </html>
   );
