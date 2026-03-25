@@ -31,11 +31,15 @@ export default function Home() {
           <HomeHero
             title="Workbench"
             tag={["NextJS", "Developer Utilities"]}
-            description="My collection space for quick developer utilities. Copy, format, and generate values in seconds."
+            description="The site you're looking at right now. A collection of quick developer utilities. Also doubles as my personal space: head to /about to learn more about me through an interactive resume machine."
             link={[
               {
                 href: "/tools",
                 label: "Open Tools",
+              },
+              {
+                href: "/about",
+                label: "About Me",
               },
               {
                 href: "https://github.com/NopksForge/workbench",
