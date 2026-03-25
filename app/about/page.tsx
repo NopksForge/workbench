@@ -203,8 +203,8 @@ export default function AboutPage() {
   const autoScrollTimer = useRef<ReturnType<typeof setInterval> | null>(null);
   const leverDrag = useRef({ active: false });
   const leverTrackRef = useRef<HTMLDivElement>(null);
-  const sizeDrag = useRef({ active: false, startY: 0, startA: 0 });
-  const colorDrag = useRef({ active: false, startY: 0, startA: 0 });
+  const sizeDrag = useRef({ active: false, centerX: 0, centerY: 0, startPointerAngle: 0, startA: 0 });
+  const colorDrag = useRef({ active: false, centerX: 0, centerY: 0, startPointerAngle: 0, startA: 0 });
   const sliderDrag = useRef({ active: false });
   const sliderTrackRef = useRef<HTMLDivElement>(null);
   const prevCodeRef = useRef(activeCode);
@@ -358,14 +358,22 @@ export default function AboutPage() {
       if (!powered) return;
       e.preventDefault();
       (e.target as HTMLElement).setPointerCapture(e.pointerId);
-      sizeDrag.current = { active: true, startY: e.clientY, startA: sizeAngle };
+      const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+      const cx = rect.left + rect.width / 2;
+      const cy = rect.top + rect.height / 2;
+      const pointerAngle = Math.atan2(e.clientY - cy, e.clientX - cx) * (180 / Math.PI);
+      sizeDrag.current = { active: true, centerX: cx, centerY: cy, startPointerAngle: pointerAngle, startA: sizeAngle };
     },
     [powered, sizeAngle],
   );
   const onSizeMove = useCallback((e: React.PointerEvent) => {
     if (!sizeDrag.current.active) return;
-    const delta = sizeDrag.current.startY - e.clientY;
-    setSizeAngle(clamp(sizeDrag.current.startA + delta * 1.5, 0, 270));
+    const { centerX, centerY, startPointerAngle, startA } = sizeDrag.current;
+    const currentAngle = Math.atan2(e.clientY - centerY, e.clientX - centerX) * (180 / Math.PI);
+    let delta = currentAngle - startPointerAngle;
+    if (delta > 180) delta -= 360;
+    if (delta < -180) delta += 360;
+    setSizeAngle(clamp(startA + delta, 0, 270));
   }, []);
   const onSizeUp = useCallback(() => {
     sizeDrag.current.active = false;
@@ -377,18 +385,22 @@ export default function AboutPage() {
       if (!powered) return;
       e.preventDefault();
       (e.target as HTMLElement).setPointerCapture(e.pointerId);
-      colorDrag.current = {
-        active: true,
-        startY: e.clientY,
-        startA: colorAngle,
-      };
+      const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+      const cx = rect.left + rect.width / 2;
+      const cy = rect.top + rect.height / 2;
+      const pointerAngle = Math.atan2(e.clientY - cy, e.clientX - cx) * (180 / Math.PI);
+      colorDrag.current = { active: true, centerX: cx, centerY: cy, startPointerAngle: pointerAngle, startA: colorAngle };
     },
     [powered, colorAngle],
   );
   const onColorMove = useCallback((e: React.PointerEvent) => {
     if (!colorDrag.current.active) return;
-    const delta = colorDrag.current.startY - e.clientY;
-    setColorAngle(clamp(colorDrag.current.startA + delta * 1.5, 0, 270));
+    const { centerX, centerY, startPointerAngle, startA } = colorDrag.current;
+    const currentAngle = Math.atan2(e.clientY - centerY, e.clientX - centerX) * (180 / Math.PI);
+    let delta = currentAngle - startPointerAngle;
+    if (delta > 180) delta -= 360;
+    if (delta < -180) delta += 360;
+    setColorAngle(clamp(startA + delta, 0, 270));
   }, []);
   const onColorUp = useCallback(() => {
     colorDrag.current.active = false;
