@@ -28,57 +28,70 @@ export default function Home() {
           </div>
 
           <div className="flex flex-col gap-y-5">
-          <HomeHero
-            title="Workbench"
-            tag={["NextJS", "Developer Utilities"]}
-            description="The site you're looking at right now. A collection of quick developer utilities. Also doubles as my personal space: head to /about to learn more about me through an interactive resume machine."
-            link={[
-              {
-                href: "/tools",
-                label: "Open Tools",
-              },
-              {
-                href: "/about",
-                label: "About Me",
-              },
-              {
-                href: "https://github.com/NopksForge/workbench",
-                label: "Browse Repo",
-              },
-            ]}
-            islive={true}
-            bgClass="bg-gradient-to-br from-white via-cyan-50 to-sky-100/80 dark:from-zinc-950 dark:via-sky-950/30 dark:to-cyan-950/20"
-          />
-          <HomeHero
-            title="The dB Abuser"
-            tag={["NextJS", "Meme"]}
-            description="Why use a normal volume slider when you can play Snake to adjust it? absurd mini-games for the one task of changing your volume."
-            link={[
-              {
-                href: "https://meme-the-db-abuser.vercel.app/",
-                label: "Open Meme",
-              },
-              {
-                href: "https://github.com/NopksForge/meme-the-db-abuser",
-                label: "Browse Repo",
-              },
-            ]}
-            islive={true}
-            bgClass="bg-gradient-to-br from-white via-fuchsia-50 to-rose-100/80 dark:from-zinc-950 dark:via-fuchsia-950/25 dark:to-rose-950/20"
-          />
-          <HomeHero
-            title="Debug and Dragon"
-            tag={["Golang", "NextJS", "Game", "AI", "Local"]}
-            description="A browser RPG with live maps, chat, and turn-based combat. NextJS frontend, Go backend, your local AI as dungeon master"
-            link={[
-              {
-                href: "https://github.com/NopksForge/debug-and-dragon",
-                label: "Browse Repo",
-              },
-            ]}
-            islive={false}
-            bgClass="bg-gradient-to-br from-white via-amber-50 to-orange-100/80 dark:from-zinc-950 dark:via-amber-950/20 dark:to-orange-950/20"
-          />
+            <HomeHero
+              title="🛠️ Workbench"
+              tag={["NextJS", "Developer Utilities"]}
+              description="The site you're looking at right now. A collection of quick developer utilities. Also doubles as my personal space: head to /about to learn more about me through an interactive resume machine."
+              link={[
+                {
+                  href: "/tools",
+                  label: "Open Tools",
+                },
+                {
+                  href: "/about",
+                  label: "About Me",
+                },
+                {
+                  href: "https://github.com/NopksForge/workbench",
+                  label: "Browse Repo",
+                },
+              ]}
+              islive={true}
+              bgClass="bg-gradient-to-br from-white via-cyan-50 to-sky-100/80 dark:from-zinc-950 dark:via-sky-950/30 dark:to-cyan-950/20"
+            />
+            <HomeHero
+              title="🎚️ The dB Abuser"
+              tag={["NextJS", "Meme"]}
+              description="Why use a normal volume slider when you can play Snake to adjust it? absurd mini-games for the one task of changing your volume."
+              link={[
+                {
+                  href: "https://meme-the-db-abuser.vercel.app/",
+                  label: "Open Meme",
+                },
+                {
+                  href: "https://github.com/NopksForge/meme-the-db-abuser",
+                  label: "Browse Repo",
+                },
+              ]}
+              islive={true}
+              bgClass="bg-gradient-to-br from-white via-fuchsia-50 to-rose-100/80 dark:from-zinc-950 dark:via-fuchsia-950/25 dark:to-rose-950/20"
+            />
+            <HomeHero
+              title="🧪 Infinite Onslaught"
+              tag={["Golang", "NextJS", "Game", "AI", "Local"]}
+              description="A browser-based roguelite combining infinite crafting discovery with real-time tower defense survival. Using an AI-powered crafting table to discover new items."
+              link={[
+                {
+                  href: "https://github.com/NopksForge/infinite-onslaught",
+                  label: "Browse Repo",
+                },
+              ]}
+              islive={false}
+              bgClass="bg-gradient-to-br from-white via-amber-50 to-orange-100/80 dark:from-zinc-950 dark:via-amber-950/20 dark:to-orange-950/20"
+            />
+            <HomeHero
+              title="🎲 Debug and Dragon"
+              tag={["Golang", "NextJS", "Game", "AI", "Local"]}
+              description="A browser RPG with live maps, chat, and turn-based combat. NextJS frontend, Go backend, your local AI as dungeon master"
+              link={[
+                {
+                  href: "https://github.com/NopksForge/debug-and-dragon",
+                  label: "Browse Repo",
+                },
+              ]}
+              islive={false}
+              bgClass="bg-gradient-to-br from-white via-amber-50 to-orange-100/80 dark:from-zinc-950 dark:via-amber-950/20 dark:to-orange-950/20"
+            />
           </div>
         </section>
       </main>
