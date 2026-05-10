@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { PROJECTS } from "@/lib/projects";
 import type { Project } from "@/lib/projects";
@@ -37,12 +38,17 @@ function isExternal(href: string) {
 
 function ProjectRow({ p }: { p: Project }) {
   const [hov, setHov] = useState(false);
+  const router = useRouter();
   const external = isExternal(p.primaryHref);
 
   return (
     <div
+      role="link"
+      tabIndex={0}
       onMouseEnter={() => setHov(true)}
       onMouseLeave={() => setHov(false)}
+      onClick={() => router.push(`/projects/${p.id}`)}
+      onKeyDown={(e) => e.key === "Enter" && router.push(`/projects/${p.id}`)}
       className="grid grid-cols-12 gap-8 py-10"
       style={{
         borderTop: "1px solid var(--rule)",
@@ -50,6 +56,7 @@ function ProjectRow({ p }: { p: Project }) {
         marginInline: hov ? -16 : 0,
         paddingInline: hov ? 16 : 0,
         transition: "background .15s, margin .15s, padding .15s",
+        cursor: "pointer",
       }}
     >
       {/* Number + status */}
@@ -106,6 +113,23 @@ function ProjectRow({ p }: { p: Project }) {
 
       {/* Links */}
       <div className="col-span-12 md:col-span-3 flex flex-col items-start md:items-end gap-2 md:justify-start">
+        {/* view details — always present */}
+        <Link
+          href={`/projects/${p.id}`}
+          onClick={(e) => e.stopPropagation()}
+          className="te-mono uppercase inline-flex items-center gap-2"
+          style={{
+            fontSize: 11,
+            letterSpacing: ".22em",
+            color: "var(--accent)",
+            paddingBottom: 4,
+            borderBottom: "1px solid var(--accent)",
+            textDecoration: "none",
+          }}
+        >
+          view details <span>→</span>
+        </Link>
+
         {external ? (
           <a
             href={p.primaryHref}
