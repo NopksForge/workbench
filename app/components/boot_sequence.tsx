@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { playClick } from "@/lib/sound";
+import { useEffect, useRef, useState } from "react";
 
 // ── Adjust timing here ───────────────────────────────────────
 const CONFIG = {
@@ -31,6 +32,14 @@ export function BootSequence() {
   );
   const [idx, setIdx] = useState(0);
   const [fading, setFading] = useState(false);
+  const audioCueFired = useRef(false);
+
+  useEffect(() => {
+    if (active && idx === 4 && LINES[4] === "boot · audio" && !audioCueFired.current) {
+      audioCueFired.current = true;
+      playClick("boot");
+    }
+  }, [active, idx]);
 
   useEffect(() => {
     if (!active) return;

@@ -1,5 +1,6 @@
 "use client";
 
+import { playClick } from "@/lib/sound";
 import type { RefObject } from "react";
 
 type DisplayScreenProps = {
@@ -68,6 +69,7 @@ export function DisplayScreen({
                     target="_blank"
                     rel="noopener noreferrer"
                     className="block cursor-pointer rounded transition-colors hover:bg-white/10"
+                    onClick={() => playClick("tab")}
                   >
                     {line}
                   </a>

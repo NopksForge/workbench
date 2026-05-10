@@ -1,5 +1,12 @@
 "use client";
 
+import {
+  hydrateSoundPreference,
+  persistSoundPreference,
+  playClick,
+  registerGlobalSoundBridge,
+  setSoundEnabled,
+} from "@/lib/sound";
 import { THEME_STORAGE_KEY, type ThemePreference } from "@/lib/theme";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -14,9 +21,13 @@ const TABS = [
 export default function Navbar() {
   const pathname = usePathname();
   const [theme, setTheme] = useState<ThemePreference>("light");
+  const [sound, setSound] = useState(true);
   const [ready, setReady] = useState(false);
 
   useLayoutEffect(() => {
+    registerGlobalSoundBridge();
+    const sfxOn = hydrateSoundPreference();
+    setSound(sfxOn);
     const saved = localStorage.getItem(THEME_STORAGE_KEY) as ThemePreference | null;
     const preferred = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
     const resolved = saved ?? preferred;
@@ -31,10 +42,19 @@ export default function Navbar() {
   }
 
   const onToggle = () => {
+    playClick("switch");
     const next: ThemePreference = theme === "dark" ? "light" : "dark";
     setTheme(next);
     localStorage.setItem(THEME_STORAGE_KEY, next);
     applyTheme(next);
+  };
+
+  const onSfxToggle = () => {
+    const next = !sound;
+    setSound(next);
+    persistSoundPreference(next);
+    setSoundEnabled(next);
+    playClick("switch");
   };
 
   return (
@@ -44,7 +64,7 @@ export default function Navbar() {
     >
       <div className="max-w-[1080px] mx-auto px-6 py-4 flex items-center gap-8">
         {/* Wordmark */}
-        <Link href="/" className="flex items-center gap-2 shrink-0">
+        <Link href="/" className="flex items-center gap-2 shrink-0" onClick={() => playClick("tab")}>
           <span
             style={{
               width: 6,
@@ -67,6 +87,7 @@ export default function Navbar() {
               <Link
                 key={t.href}
                 href={t.href}
+                onClick={() => playClick("tab")}
                 className="te-mono relative"
                 style={{
                   fontSize: 11,
@@ -86,15 +107,26 @@ export default function Navbar() {
 
         <div className="flex-1" />
 
-        {/* Theme toggle */}
+        {/* Theme + SFX (tmp/header.jsx) */}
         {ready && (
-          <button
-            onClick={onToggle}
-            className="te-mono uppercase"
-            style={{ fontSize: 10, letterSpacing: ".2em", color: "var(--silk-muted)" }}
-          >
-            {theme === "light" ? "lt" : "dk"}
-          </button>
+          <div className="flex items-center gap-5 te-mono" style={{ fontSize: 10, letterSpacing: ".2em" }}>
+            <button
+              type="button"
+              onClick={onToggle}
+              className="uppercase"
+              style={{ color: "var(--silk-muted)" }}
+            >
+              {theme === "light" ? "lt" : "dk"}
+            </button>
+            <button
+              type="button"
+              onClick={onSfxToggle}
+              className="uppercase"
+              style={{ color: sound ? "var(--accent)" : "var(--silk-muted)" }}
+            >
+              sfx
+            </button>
+          </div>
         )}
       </div>
     </header>

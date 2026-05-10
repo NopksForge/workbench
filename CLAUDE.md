@@ -56,7 +56,8 @@ Timing config is at the top of `boot_sequence.tsx` (`CONFIG` object — adjust f
 |------|---------|
 | `app/layout.tsx` | fonts, theme+boot inline script, global layout |
 | `app/globals.css` | TE CSS vars, theme rules, utility classes |
-| `app/components/nevbar.tsx` | TE-style header, theme toggle |
+| `app/components/nevbar.tsx` | TE-style header, theme + sfx toggles (Web Audio clicks) |
+| `lib/sound.ts` | `playClick` presets + `nf_sfx` localStorage; `window.playClick` / `__nf_sound` bridge |
 | `app/components/footer.tsx` | shared TE footer |
 | `app/components/boot_sequence.tsx` | boot animation + config |
 | `app/components/boot_wrapper.tsx` | thin "use client" shell for ssr:false dynamic import |
@@ -74,6 +75,7 @@ The `AboutPage` in `app/about/page.tsx` is a large "use client" component contai
 for the TE-KO-II-inspired resume machine. Sub-components live in `app/components/composer/`.
 The machine uses hardcoded zinc Tailwind classes (it's meant to look like physical hardware).
 Do not change the machine's internal styling — only the outer page wrapper around it.
+Interaction sounds use `playClick` from `lib/sound.ts` in page handlers; `display_screen.tsx` plays on external link clicks.
 
 ## Project data
 Edit `lib/projects.ts` to add/remove projects. The `PROJECTS` array is imported by both the

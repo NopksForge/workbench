@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import { ClipboardToast } from "@/app/components/clipboard_toast";
+import { playClick } from "@/lib/sound";
 import { CodexPanel } from "@/app/components/composer/codex_panel";
 import { ControlPanel } from "@/app/components/composer/control_panel";
 import { DisplayScreen } from "@/app/components/composer/display_screen";
@@ -225,6 +226,7 @@ export default function AboutPage() {
   const executeCode = useCallback(
     (code: string) => {
       if (!powered) return;
+      playClick(RESUME[code] ? "beep" : "error");
       if (timerRef.current) clearInterval(timerRef.current);
       const data = RESUME[code];
       const src = data ? [...data.lines] : [...NOT_FOUND_LINES];
@@ -249,6 +251,7 @@ export default function AboutPage() {
 
   /* ── Power toggle ── */
   const togglePower = useCallback(() => {
+    playClick("switch");
     setPowered((prev) => {
       if (!prev) {
         setScreenLines([]);
@@ -340,6 +343,7 @@ export default function AboutPage() {
   const onLeverDown = useCallback(
     (e: React.PointerEvent) => {
       if (!powered) return;
+      playClick("knob-down");
       e.preventDefault();
       (e.target as HTMLElement).setPointerCapture(e.pointerId);
       leverDrag.current.active = true;
@@ -356,7 +360,9 @@ export default function AboutPage() {
   const onLeverUp = useCallback(() => {
     if (!leverDrag.current.active) return;
     leverDrag.current.active = false;
-    if (leverPos > 0.8) executeCode(activeCode);
+    const fire = leverPos > 0.8;
+    if (fire) executeCode(activeCode);
+    else playClick("knob-up");
     setLeverPos(0);
   }, [leverPos, executeCode, activeCode]);
 
@@ -364,6 +370,7 @@ export default function AboutPage() {
   const onSizeDown = useCallback(
     (e: React.PointerEvent) => {
       if (!powered) return;
+      playClick("knob-down");
       e.preventDefault();
       (e.target as HTMLElement).setPointerCapture(e.pointerId);
       const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
@@ -384,6 +391,7 @@ export default function AboutPage() {
     setSizeAngle(clamp(startA + delta, 0, 270));
   }, []);
   const onSizeUp = useCallback(() => {
+    if (sizeDrag.current.active) playClick("knob-up");
     sizeDrag.current.active = false;
   }, []);
 
@@ -391,6 +399,7 @@ export default function AboutPage() {
   const onColorDown = useCallback(
     (e: React.PointerEvent) => {
       if (!powered) return;
+      playClick("knob-down");
       e.preventDefault();
       (e.target as HTMLElement).setPointerCapture(e.pointerId);
       const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
@@ -411,6 +420,7 @@ export default function AboutPage() {
     setColorAngle(clamp(startA + delta, 0, 270));
   }, []);
   const onColorUp = useCallback(() => {
+    if (colorDrag.current.active) playClick("knob-up");
     colorDrag.current.active = false;
   }, []);
 
@@ -424,6 +434,7 @@ export default function AboutPage() {
   const onSliderDown = useCallback(
     (e: React.PointerEvent) => {
       if (!powered) return;
+      playClick("fader");
       e.preventDefault();
       (e.target as HTMLElement).setPointerCapture(e.pointerId);
       sliderDrag.current.active = true;
@@ -439,6 +450,7 @@ export default function AboutPage() {
     [updateSlider],
   );
   const onSliderUp = useCallback(() => {
+    if (sliderDrag.current.active) playClick("knob-up");
     sliderDrag.current.active = false;
   }, []);
 
@@ -446,6 +458,7 @@ export default function AboutPage() {
   const togglePad = useCallback(
     (index: number) => {
       if (!powered) return;
+      playClick("pad");
       const next = [...padBits];
       next[index] = next[index] === 1 ? 0 : 1;
       setPadBits(next);
@@ -458,6 +471,7 @@ export default function AboutPage() {
 
   const handleLineCopy = useCallback((value: string) => {
     navigator.clipboard.writeText(value);
+    playClick("beep");
     setToastMsg(`Copied: ${value}`);
     setToastId(Date.now());
   }, []);
@@ -603,8 +617,16 @@ export default function AboutPage() {
                       onLeverDown={onLeverDown}
                       onLeverMove={onLeverMove}
                       onLeverUp={onLeverUp}
-                      onToggleAutoScroll={() => powered && setAutoScroll((p) => !p)}
-                      onToggleAutoExec={() => powered && setAutoExec((p) => !p)}
+                      onToggleAutoScroll={() => {
+                        if (!powered) return;
+                        playClick("switch");
+                        setAutoScroll((p) => !p);
+                      }}
+                      onToggleAutoExec={() => {
+                        if (!powered) return;
+                        playClick("switch");
+                        setAutoExec((p) => !p);
+                      }}
                       onSizeDown={onSizeDown}
                       onSizeMove={onSizeMove}
                       onSizeUp={onSizeUp}
