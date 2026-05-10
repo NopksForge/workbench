@@ -71,20 +71,6 @@ export function UuidGenSection() {
   return (
     <section>
       <div className="space-y-4">
-        <div>
-          <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">
-            UUID generator
-          </h2>
-          <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
-            Random UUID for testing. Copy the snippet into Bruno / Postman to
-            use{" "}
-            <span className="font-mono font-medium text-zinc-800 dark:text-zinc-200">
-              {"{{randUuid}}"}
-            </span>
-            .
-          </p>
-        </div>
-
         <div className="flex flex-wrap items-center gap-2">
           <button type="button" onClick={refresh} className={primaryBtn}>
             Refresh

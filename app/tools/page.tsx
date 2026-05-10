@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { EmojiCommitSection } from "@/app/components/Tools/emoji";
 import { JsonFormatterSection } from "@/app/components/Tools/json_formatter";
 import { UuidGenSection } from "@/app/components/Tools/uuid_gen";
@@ -9,31 +8,101 @@ export const metadata: Metadata = {
   description: "Small utilities for day-to-day dev work.",
 };
 
+function ToolSection({
+  code,
+  name,
+  desc,
+  children,
+}: {
+  code: string;
+  name: string;
+  desc: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <section className="py-12" style={{ borderTop: "1px solid var(--rule)" }}>
+      <div className="grid grid-cols-12 gap-6 items-baseline mb-6">
+        <div
+          className="col-span-12 md:col-span-2 te-mono uppercase"
+          style={{ fontSize: 10, letterSpacing: ".25em", color: "var(--silk-muted)" }}
+        >
+          № {code}
+        </div>
+        <div className="col-span-12 md:col-span-10">
+          <h3
+            className="te-sans font-medium leading-[1]"
+            style={{ fontSize: 28, letterSpacing: "-.02em", color: "var(--ink)" }}
+          >
+            {name}
+          </h3>
+          <p
+            className="te-mono mt-2"
+            style={{ fontSize: 12, color: "var(--silk-muted)", letterSpacing: ".04em" }}
+          >
+            {desc}
+          </p>
+        </div>
+      </div>
+      <div className="grid grid-cols-12 gap-6">
+        <div className="col-span-12 md:col-span-2" />
+        <div className="col-span-12 md:col-span-10">{children}</div>
+      </div>
+    </section>
+  );
+}
+
 export default function ToolsPage() {
   return (
-    <div className="flex flex-1 flex-col bg-zinc-50 font-sans dark:bg-black">
-      <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-10 px-4 py-10 sm:px-6 lg:px-8">
-        <header className="space-y-2">
-          <h1 className="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-50">
-            Dev tools
-          </h1>
-          <p className="max-w-2xl text-sm text-zinc-600 dark:text-zinc-400">
-            Quick helpers—more sections can land here over time.
-          </p>
-        </header>
-
-        <div className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-950 sm:p-8">
-          <EmojiCommitSection />
+    <div className="max-w-[1080px] mx-auto px-6">
+      {/* Hero */}
+      <section className="pt-24 pb-12">
+        <div
+          className="te-mono uppercase mb-8"
+          style={{ fontSize: 10, letterSpacing: ".25em", color: "var(--silk-muted)" }}
+        >
+          nopksforge — workbench
         </div>
+        <h1
+          className="te-sans font-medium leading-[.95]"
+          style={{
+            fontSize: "clamp(48px, 7vw, 96px)",
+            letterSpacing: "-.03em",
+            color: "var(--ink)",
+          }}
+        >
+          dev tools<span style={{ color: "var(--accent)" }}>.</span>
+        </h1>
+        <p
+          className="mt-6 max-w-[58ch]"
+          style={{ fontSize: 16, lineHeight: 1.6, color: "var(--silk)" }}
+        >
+          Quick helpers — more sections can land here over time.
+        </p>
+      </section>
 
-        <div className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-950 sm:p-8">
-          <UuidGenSection />
-        </div>
+      <ToolSection
+        code="01"
+        name="Emoji commits"
+        desc="Tap to copy a git commit -m prefix."
+      >
+        <EmojiCommitSection />
+      </ToolSection>
 
-        <div className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-950 sm:p-8">
-          <JsonFormatterSection />
-        </div>
-      </main>
+      <ToolSection
+        code="02"
+        name="UUID generator"
+        desc="Random v4 — copy into Bruno or Postman."
+      >
+        <UuidGenSection />
+      </ToolSection>
+
+      <ToolSection
+        code="03"
+        name="JSON formatter"
+        desc="Parse, beautify, minify."
+      >
+        <JsonFormatterSection />
+      </ToolSection>
     </div>
   );
 }

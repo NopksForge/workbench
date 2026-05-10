@@ -158,27 +158,6 @@ export function JsonFormatterSection() {
 
   return (
     <section className="space-y-4">
-      <div>
-        <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">
-          JSON Formatter
-        </h2>
-        <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
-          Drop in your JSON. Beautify just makes it look nice. Hit{" "}
-          <span className="font-medium text-zinc-800 dark:text-zinc-200">
-            (readable)
-          </span>{" "}
-          if you wanna see parsed{" "}
-          <code className="rounded bg-zinc-100 px-1 py-0.5 font-mono text-xs dark:bg-zinc-900">
-            header
-          </code>
-          /
-          <code className="rounded bg-zinc-100 px-1 py-0.5 font-mono text-xs dark:bg-zinc-900">
-            body
-          </code>
-          fields for real.
-        </p>
-      </div>
-
       <div className="flex w-full flex-wrap items-center gap-2">
         <div className="flex flex-wrap gap-2">
           <button

@@ -3,144 +3,100 @@
 import { THEME_STORAGE_KEY, type ThemePreference } from "@/lib/theme";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useLayoutEffect, useState } from "react";
-import { ThemeToggle } from "./theme_toggle";
+import { useLayoutEffect, useState } from "react";
 
-const LINKS = [
-  { href: "/tools", label: "Tools" },
-  { href: "/about", label: "About" }
+const TABS = [
+  { href: "/",      label: "projects", matchExact: true },
+  { href: "/tools", label: "tools",    matchExact: false },
+  { href: "/about", label: "about",    matchExact: false },
 ];
 
 export default function Navbar() {
   const pathname = usePathname();
   const [theme, setTheme] = useState<ThemePreference>("light");
-  const [themeReady, setThemeReady] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [ready, setReady] = useState(false);
 
-  // Sync React state with localStorage / system (layout script already set <html class="dark">).
   useLayoutEffect(() => {
     const saved = localStorage.getItem(THEME_STORAGE_KEY) as ThemePreference | null;
-    const preferred = window.matchMedia("(prefers-color-scheme: dark)").matches
-      ? "dark"
-      : "light";
+    const preferred = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
     const resolved = saved ?? preferred;
+    applyTheme(resolved);
     setTheme(resolved);
-    document.documentElement.classList.toggle("dark", resolved === "dark");
-    setThemeReady(true);
+    setReady(true);
   }, []);
 
-  // Close menu on route change
-  useEffect(() => {
-    setMenuOpen(false);
-  }, [pathname]);
+  function applyTheme(t: ThemePreference) {
+    document.documentElement.classList.toggle("dark", t === "dark");
+    document.documentElement.dataset.theme = t;
+  }
 
   const onToggle = () => {
     const next: ThemePreference = theme === "dark" ? "light" : "dark";
     setTheme(next);
     localStorage.setItem(THEME_STORAGE_KEY, next);
-    document.documentElement.classList.toggle("dark", next === "dark");
+    applyTheme(next);
   };
 
   return (
-    <nav className="sticky top-0 z-20 border-b border-zinc-100 dark:border-zinc-800 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-md">
-      <div className="w-full mx-auto pl-4 lg:pr-4 sm:pr-2 h-12 flex items-center justify-between">
+    <header
+      className="sticky top-0 z-30"
+      style={{ background: "var(--bg)", borderBottom: "1px solid var(--rule)" }}
+    >
+      <div className="max-w-[1080px] mx-auto px-6 py-4 flex items-center gap-8">
         {/* Wordmark */}
-        <Link
-          href="/"
-          className="text-lg font-semibold tracking-tight text-zinc-900 dark:text-white hover:opacity-70 transition-opacity"
-        >
-          Nopks<span className="text-red-500">Forge</span>
+        <Link href="/" className="flex items-center gap-2 shrink-0">
+          <span
+            style={{
+              width: 6,
+              height: 6,
+              borderRadius: "50%",
+              background: "var(--accent)",
+              boxShadow: "0 0 6px var(--accent)",
+            }}
+          />
+          <span className="te-mono" style={{ fontSize: 12, letterSpacing: ".18em", color: "var(--ink)" }}>
+            nopks<span style={{ color: "var(--accent)" }}>forge</span>
+          </span>
         </Link>
 
-        {/* Desktop links + theme toggle */}
-        <div className="hidden sm:flex items-center gap-1">
-          {LINKS.map(link => {
-            const active = pathname === link.href
+        {/* Nav tabs */}
+        <nav className="flex items-center gap-5">
+          {TABS.map((t) => {
+            const active = t.matchExact ? pathname === t.href : pathname.startsWith(t.href);
             return (
               <Link
-                key={link.href}
-                href={link.href}
-                className={`text-sm px-3 py-1.5 rounded-lg font-medium transition-colors
-                  ${active
-                    ? 'bg-zinc-900 text-white dark:bg-white dark:text-zinc-900'
-                    : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800'
-                  }`}
+                key={t.href}
+                href={t.href}
+                className="te-mono relative"
+                style={{
+                  fontSize: 11,
+                  letterSpacing: ".22em",
+                  color: active ? "var(--ink)" : "var(--silk-muted)",
+                  paddingBottom: 2,
+                  borderBottom: active ? "1px solid var(--ink)" : "1px solid transparent",
+                  textTransform: "uppercase",
+                  textDecoration: "none",
+                }}
               >
-                {link.label}
+                {t.label}
               </Link>
-            )
+            );
           })}
-          <div className="ml-2">
-            {themeReady ? (
-              <ThemeToggle theme={theme} onToggle={onToggle} />
-            ) : (
-              <span
-                className="inline-block h-8 w-16 rounded-full border border-transparent"
-                aria-hidden
-              />
-            )}
-          </div>
-        </div>
+        </nav>
 
-        {/* Mobile: theme toggle + hamburger */}
-        <div className="flex sm:hidden items-center gap-2">
-          {themeReady ? (
-            <ThemeToggle theme={theme} onToggle={onToggle} />
-          ) : (
-            <span
-              className="inline-block h-8 w-16 rounded-full border border-transparent"
-              aria-hidden
-            />
-          )}
+        <div className="flex-1" />
+
+        {/* Theme toggle */}
+        {ready && (
           <button
-            onClick={() => setMenuOpen(o => !o)}
-            aria-label={menuOpen ? 'Close menu' : 'Open menu'}
-            aria-expanded={menuOpen}
-            className="h-9 w-9 rounded-lg text-zinc-500 transition-colors hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800"
+            onClick={onToggle}
+            className="te-mono uppercase"
+            style={{ fontSize: 10, letterSpacing: ".2em", color: "var(--silk-muted)" }}
           >
-            <span className="relative mx-auto block h-5 w-5 overflow-visible">
-              {/* Three-bar → X animation */}
-              <span
-                className={`absolute left-0 top-[3px] block h-px w-5 rounded-full bg-current transition-all duration-200 origin-center ${
-                  menuOpen ? 'translate-y-[6px] rotate-45' : ''
-                }`}
-              />
-              <span
-                className={`absolute left-0 top-[9px] block h-px w-5 rounded-full bg-current transition-all duration-200 ${
-                  menuOpen ? 'opacity-0 scale-x-0' : ''
-                }`}
-              />
-              <span
-                className={`absolute left-0 top-[15px] block h-px w-5 rounded-full bg-current transition-all duration-200 origin-center ${
-                  menuOpen ? '-translate-y-[6px] -rotate-45' : ''
-                }`}
-              />
-            </span>
+            {theme === "light" ? "lt" : "dk"}
           </button>
-        </div>
+        )}
       </div>
-
-      {/* Mobile dropdown */}
-      <div className={`sm:hidden overflow-hidden transition-all duration-200 ease-in-out ${menuOpen ? 'max-h-64 border-t border-zinc-100 dark:border-zinc-800' : 'max-h-0'}`}>
-        <div className="px-3 py-2 flex flex-col gap-0.5">
-          {LINKS.map(link => {
-            const active = pathname === link.href
-            return (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={`text-sm px-3 py-2.5 rounded-lg font-medium transition-colors
-                  ${active
-                    ? 'bg-zinc-900 text-white dark:bg-white dark:text-zinc-900'
-                    : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800'
-                  }`}
-              >
-                {link.label}
-              </Link>
-            )
-          })}
-        </div>
-      </div>
-    </nav>
-  )
+    </header>
+  );
 }

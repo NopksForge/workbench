@@ -41,9 +41,6 @@ const RESUME: Record<string, { title: string; lines: string[] }> = {
       "  ▸ EMAIL",
       "    noppasan.ksj@gmail.com",
       "",
-      "  ▸ PHONE",
-      "    +66-65-374-4234",
-      "",
       "  ▸ GITHUB",
       "    github.com/NopksForge",
       "",
@@ -175,7 +172,6 @@ const CODEX: CodexEntry[] = [
 
 const COPYABLE_LINES: Record<string, string> = {
   "noppasan.ksj@gmail.com": "noppasan.ksj@gmail.com",
-  "+66-65-374-4234": "+66-65-374-4234",
 };
 
 const LINK_LINES: Record<string, string> = {
@@ -480,7 +476,7 @@ export default function AboutPage() {
     activeCode !== lastExecutedCode;
 
   return (
-    <div className="flex min-h-[calc(100vh-48px)] items-start justify-center overflow-x-auto bg-zinc-50 dark:bg-zinc-950 p-3 sm:items-center sm:p-6">
+    <div>
       <style>{`
         @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
         @keyframes bootFlash { 0%{opacity:0} 30%{opacity:1} 60%{opacity:.4} 100%{opacity:1} }
@@ -488,66 +484,150 @@ export default function AboutPage() {
         .screen-boot { animation: bootFlash .4s ease-out; }
       `}</style>
 
-      <div
-        className="relative w-full min-w-[740px] max-w-[688px] select-none overflow-hidden rounded-2xl bg-zinc-300 shadow-[0_24px_80px_rgba(0,0,0,.6),inset_0_1px_0_rgba(255,255,255,.06)]"
-      >
-        <TopHeaderBar />
+      <div className="max-w-[1080px] mx-auto px-6">
+        {/* Hero */}
+        <section className="pt-24 pb-16">
+          <div
+            className="te-mono uppercase mb-8"
+            style={{ fontSize: 10, letterSpacing: ".25em", color: "var(--silk-muted)" }}
+          >
+            nopksforge — operator
+          </div>
+          <h1
+            className="te-sans font-medium leading-[.95]"
+            style={{
+              fontSize: "clamp(48px, 7vw, 96px)",
+              letterSpacing: "-.03em",
+              color: "var(--ink)",
+            }}
+          >
+            about me<span style={{ color: "var(--accent)" }}>.</span>
+          </h1>
+          <p
+            className="mt-6 max-w-[58ch]"
+            style={{ fontSize: 17, lineHeight: 1.55, color: "var(--silk)" }}
+          >
+            Full-stack engineer. Mission-critical financial apps by day, odd
+            side projects by night. Loves clean architecture, builds monitoring
+            tools, sleeps less than the cat.
+          </p>
+          <div className="mt-10 grid grid-cols-3 gap-8 max-w-[480px]">
+            {[
+              { k: "projects", v: "5+" },
+              { k: "stack", v: "Go/TS" },
+              { k: "tz", v: "GMT+7" },
+            ].map((s) => (
+              <div key={s.k}>
+                <div
+                  className="te-mono uppercase"
+                  style={{ fontSize: 10, letterSpacing: ".25em", color: "var(--silk-muted)" }}
+                >
+                  {s.k}
+                </div>
+                <div
+                  className="te-sans font-medium mt-2"
+                  style={{ fontSize: 28, color: "var(--ink)" }}
+                >
+                  {s.v}
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
 
-        <div className="flex min-w-0 gap-4 p-4 pb-3">
-          <DisplayScreen
-            powered={powered}
-            fontSize={fontSize}
-            screenColor={screenColor}
-            screenLines={screenLines}
-            screenRef={screenRef}
-            copyableLines={COPYABLE_LINES}
-            linkLines={LINK_LINES}
-            onLineCopy={handleLineCopy}
-          />
-          <PowerStatusPanel
-            powered={powered}
-            statusText={statusText}
-            onTogglePower={togglePower}
-          />
-        </div>
+        {/* Resume composer section */}
+        <section className="py-12" style={{ borderTop: "1px solid var(--rule)" }}>
+          <div className="grid grid-cols-12 gap-6 items-baseline mb-8">
+            <div
+              className="col-span-12 md:col-span-2 te-mono uppercase"
+              style={{ fontSize: 10, letterSpacing: ".25em", color: "var(--silk-muted)" }}
+            >
+              № 00
+            </div>
+            <div className="col-span-12 md:col-span-10 flex items-baseline gap-4">
+              <h3
+                className="te-sans font-medium leading-[1]"
+                style={{ fontSize: 28, letterSpacing: "-.02em", color: "var(--ink)" }}
+              >
+                Resume composer
+              </h3>
+            </div>
+          </div>
 
-        <div className="flex justify-between gap-2 px-4 pb-4">
-          <ControlPanel
-            powered={powered}
-            autoScroll={autoScroll}
-            autoExec={autoExec}
-            scrollPos={scrollPos}
-            isSliderDragging={sliderDrag.current.active}
-            sliderTrackRef={sliderTrackRef}
-            leverPos={leverPos}
-            isLeverDragging={leverDrag.current.active}
-            leverTrackRef={leverTrackRef}
-            sizeAngle={sizeAngle}
-            colorAngle={colorAngle}
-            padBits={padBits}
-            onLeverDown={onLeverDown}
-            onLeverMove={onLeverMove}
-            onLeverUp={onLeverUp}
-            onToggleAutoScroll={() => powered && setAutoScroll((p) => !p)}
-            onToggleAutoExec={() => powered && setAutoExec((p) => !p)}
-            onSizeDown={onSizeDown}
-            onSizeMove={onSizeMove}
-            onSizeUp={onSizeUp}
-            onColorDown={onColorDown}
-            onColorMove={onColorMove}
-            onColorUp={onColorUp}
-            onTogglePad={togglePad}
-            onSliderDown={onSliderDown}
-            onSliderMove={onSliderMove}
-            onSliderUp={onSliderUp}
-            executeLeverTwinkle={executeLeverTwinkle}
-          />
-          <CodexPanel
-            codexEntries={CODEX}
-            activeCode={activeCode}
-            powered={powered}
-          />
-        </div>
+          <div className="grid grid-cols-12 gap-6">
+            <div className="col-span-12 md:col-span-2" />
+            <div className="col-span-12 md:col-span-10">
+              <div
+                className="overflow-x-auto"
+                style={{
+                  background: "var(--surface)",
+                  border: "1px solid var(--rule)",
+                  padding: "24px",
+                }}
+              >
+                <div className="relative w-full min-w-[740px] max-w-[688px] mx-auto select-none overflow-hidden rounded-2xl bg-zinc-300 shadow-[0_24px_80px_rgba(0,0,0,.6),inset_0_1px_0_rgba(255,255,255,.06)]">
+                  <TopHeaderBar />
+
+                  <div className="flex min-w-0 gap-4 p-4 pb-3">
+                    <DisplayScreen
+                      powered={powered}
+                      fontSize={fontSize}
+                      screenColor={screenColor}
+                      screenLines={screenLines}
+                      screenRef={screenRef}
+                      copyableLines={COPYABLE_LINES}
+                      linkLines={LINK_LINES}
+                      onLineCopy={handleLineCopy}
+                    />
+                    <PowerStatusPanel
+                      powered={powered}
+                      statusText={statusText}
+                      onTogglePower={togglePower}
+                    />
+                  </div>
+
+                  <div className="flex justify-between gap-2 px-4 pb-4">
+                    <ControlPanel
+                      powered={powered}
+                      autoScroll={autoScroll}
+                      autoExec={autoExec}
+                      scrollPos={scrollPos}
+                      isSliderDragging={sliderDrag.current.active}
+                      sliderTrackRef={sliderTrackRef}
+                      leverPos={leverPos}
+                      isLeverDragging={leverDrag.current.active}
+                      leverTrackRef={leverTrackRef}
+                      sizeAngle={sizeAngle}
+                      colorAngle={colorAngle}
+                      padBits={padBits}
+                      onLeverDown={onLeverDown}
+                      onLeverMove={onLeverMove}
+                      onLeverUp={onLeverUp}
+                      onToggleAutoScroll={() => powered && setAutoScroll((p) => !p)}
+                      onToggleAutoExec={() => powered && setAutoExec((p) => !p)}
+                      onSizeDown={onSizeDown}
+                      onSizeMove={onSizeMove}
+                      onSizeUp={onSizeUp}
+                      onColorDown={onColorDown}
+                      onColorMove={onColorMove}
+                      onColorUp={onColorUp}
+                      onTogglePad={togglePad}
+                      onSliderDown={onSliderDown}
+                      onSliderMove={onSliderMove}
+                      onSliderUp={onSliderUp}
+                      executeLeverTwinkle={executeLeverTwinkle}
+                    />
+                    <CodexPanel
+                      codexEntries={CODEX}
+                      activeCode={activeCode}
+                      powered={powered}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
       </div>
 
       <ClipboardToast
