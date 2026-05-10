@@ -63,6 +63,7 @@ Timing config is at the top of `boot_sequence.tsx` (`CONFIG` object — adjust f
 | `app/components/project_list.tsx` | client component — interactive project rows |
 | `lib/projects.ts` | PROJECTS data array (server-safe, no "use client") |
 | `app/page.tsx` | home — hero + `<ProjectList />` |
+| `app/projects/[id]/page.tsx` | static project detail page — hero, ScreenshotMock or ImageLightbox preview, features list, prev/next nav; uses `generateStaticParams` over `PROJECTS` |
 | `app/tools/page.tsx` | dev tools page — TE section headers + existing tool components |
 | `app/about/page.tsx` | TE hero/stats + resume composer drop-in |
 | `app/components/composer/` | resume machine sub-components (hardware-inspired, keep as-is) |
