@@ -12,7 +12,9 @@ export function ImageLightbox({
 }) {
   const [open, setOpen] = useState<number | null>(null);
   const [lightboxSize, setLightboxSize] = useState<{ w: number; h: number } | null>(null);
+  const [mobilePreviewPage, setMobilePreviewPage] = useState(0);
   const naturalRef = useRef({ w: 0, h: 0 });
+  const previewScrollRef = useRef<HTMLDivElement>(null);
 
   const fitLightboxToImage = useCallback(() => {
     const nw = naturalRef.current.w;
@@ -51,43 +53,93 @@ export function ImageLightbox({
     return () => window.removeEventListener("keydown", onKey);
   }, [open, images.length]);
 
+  const onPreviewScroll = useCallback(() => {
+    const el = previewScrollRef.current;
+    if (!el) return;
+    const slideW = el.clientWidth;
+    if (slideW <= 0) return;
+    const page = Math.round(el.scrollLeft / slideW);
+    setMobilePreviewPage(Math.min(images.length - 1, Math.max(0, page)));
+  }, [images.length]);
+
+  useEffect(() => {
+    const el = previewScrollRef.current;
+    if (!el || images.length <= 1) return;
+    onPreviewScroll();
+    el.addEventListener("scroll", onPreviewScroll, { passive: true });
+    return () => el.removeEventListener("scroll", onPreviewScroll);
+  }, [images.length, onPreviewScroll]);
+
+  useEffect(() => {
+    if (images.length <= 1) return;
+    const onResize = () => onPreviewScroll();
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, [images.length, onPreviewScroll]);
+
+  const previewGridClass =
+    images.length > 1
+      ? "flex snap-x snap-mandatory gap-0 overflow-x-auto [-webkit-overflow-scrolling:touch] lg:grid lg:grid-cols-2 lg:gap-3 lg:overflow-visible lg:snap-none"
+      : "grid grid-cols-1 gap-3";
+
+  const previewTileClass =
+    images.length > 1 ? "w-full min-w-full shrink-0 snap-center lg:min-w-0" : "";
+
   return (
     <>
-      <div className={`grid gap-3 ${images.length > 1 ? "grid-cols-2" : "grid-cols-1"}`}>
-        {images.map((src, i) => (
-          <button
-            key={i}
-            onClick={() => setOpen(i)}
-            className="relative overflow-hidden block"
-            style={{
-              border: "1px solid var(--ink)",
-              aspectRatio: "16/10",
-              cursor: "zoom-in",
-              background: "none",
-              padding: 0,
-            }}
-          >
-            <Image
-              src={src}
-              alt={`${alt} preview ${i + 1}`}
-              fill
-              style={{ objectFit: "cover", transition: "opacity .15s" }}
-              sizes="(max-width: 768px) 100vw, 50vw"
-            />
-            <span
-              className="absolute inset-0 flex items-center justify-center te-mono uppercase opacity-0 hover:opacity-100"
+      <div className="space-y-2 lg:space-y-0">
+        <div
+          ref={images.length > 1 ? previewScrollRef : undefined}
+          role={images.length > 1 ? "region" : undefined}
+          aria-label={images.length > 1 ? `${alt} preview images` : undefined}
+          className={previewGridClass}
+        >
+          {images.map((src, i) => (
+            <button
+              key={i}
+              type="button"
+              onClick={() => setOpen(i)}
+              className={`relative block overflow-hidden ${previewTileClass}`}
               style={{
-                fontSize: 10,
-                letterSpacing: ".25em",
-                color: "var(--rule)",
-                background: "color-mix(in srgb, var(--bg) 60%, transparent)",
-                transition: "opacity .15s",
+                border: "1px solid var(--ink)",
+                aspectRatio: "16/10",
+                cursor: "zoom-in",
+                background: "none",
+                padding: 0,
               }}
             >
-              enlarge →
-            </span>
-          </button>
-        ))}
+              <Image
+                src={src}
+                alt={`${alt} preview ${i + 1}`}
+                fill
+                style={{ objectFit: "cover", transition: "opacity .15s" }}
+                sizes="(min-width: 1024px) 50vw, 100vw"
+              />
+              <span
+                className="absolute inset-0 flex items-center justify-center te-mono uppercase opacity-0 hover:opacity-100"
+                style={{
+                  fontSize: 10,
+                  letterSpacing: ".25em",
+                  color: "var(--rule)",
+                  background: "color-mix(in srgb, var(--bg) 60%, transparent)",
+                  transition: "opacity .15s",
+                }}
+              >
+                enlarge →
+              </span>
+            </button>
+          ))}
+        </div>
+
+        {images.length > 1 && (
+          <p
+            className="te-mono text-center lg:hidden"
+            style={{ fontSize: 10, letterSpacing: ".25em", color: "var(--silk-muted)" }}
+            aria-live="polite"
+          >
+            {mobilePreviewPage + 1} / {images.length}
+          </p>
+        )}
       </div>
 
       {open !== null && (
