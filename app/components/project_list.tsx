@@ -114,21 +114,6 @@ function ProjectRow({ p }: { p: Project }) {
       {/* Links */}
       <div className="col-span-12 md:col-span-3 flex flex-col items-start md:items-end gap-2 md:justify-start">
         {/* view details — always present */}
-        <Link
-          href={`/projects/${p.id}`}
-          onClick={(e) => e.stopPropagation()}
-          className="te-mono uppercase inline-flex items-center gap-2"
-          style={{
-            fontSize: 11,
-            letterSpacing: ".22em",
-            color: "var(--accent)",
-            paddingBottom: 4,
-            borderBottom: "1px solid var(--accent)",
-            textDecoration: "none",
-          }}
-        >
-          view details <span>→</span>
-        </Link>
 
         {external ? (
           <a

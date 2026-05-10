@@ -484,16 +484,6 @@ export default async function ProjectDetailPage({
           </div>
         </Link>
       </section>
-
-      <footer
-        className="pb-12 flex items-center justify-between te-mono uppercase"
-        style={{ fontSize: 10, letterSpacing: ".22em", color: "var(--silk-muted)" }}
-      >
-        <span>nopksforge © 2026</span>
-        <a href="mailto:noppasan.ksj@gmail.com" style={{ color: "var(--accent)" }}>
-          noppasan.ksj@gmail.com
-        </a>
-      </footer>
     </div>
   );
 }

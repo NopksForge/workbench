@@ -83,3 +83,5 @@ Do NOT move project data back into `project_list.tsx` — that breaks server-sid
 ## Tools components
 `app/components/Tools/emoji.tsx`, `uuid_gen.tsx`, `json_formatter.tsx` — internal h2 headers were
 removed so the page-level TE `ToolSection` headers handle titles. Do not re-add h2 headers inside them.
+
+# Should always update this file after make anychange
