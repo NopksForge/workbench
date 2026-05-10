@@ -305,7 +305,14 @@ export default async function ProjectDetailPage({
         {p.isMock ? (
           <ScreenshotMock id={id} />
         ) : (
-          <ImageLightbox images={p.previewImages ?? []} alt={p.name} />
+          <ImageLightbox
+            images={p.previewImages ?? []}
+            alt={p.name}
+            previewIsPortrait={p.previewIsPortrait}
+            previewScale={p.previewScale}
+            previewForceCarousel={p.previewForceCarousel}
+            previewCarouselIntervalMs={p.previewCarouselIntervalMs}
+          />
         )}
       </section>
 

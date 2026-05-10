@@ -13,12 +13,22 @@ export type Project = {
   features: string[];
   metrics: ProjectMetric[];
   isMock: boolean;
+  /** When true, preview tiles use a portrait frame and object-contain so tall shots aren’t cropped. */
+  previewIsPortrait?: boolean;
+  /** Preview strip width as a fraction of the parent (default 1). Clamped between 0.4 and 1. */
+  previewScale?: number;
+  /** Horizontal snap carousel at all breakpoints; default is carousel only below `lg`. */
+  previewForceCarousel?: boolean;
+  /** Auto-advance carousel every N ms when scroll-snap carousel is active; omit or 0 to disable. Pauses on hover and while lightbox is open. */
+  previewCarouselIntervalMs?: number;
   previewImages?: string[];
   primaryLabel: string;
   primaryHref: string;
   secondaryLabel?: string;
   secondaryHref?: string;
 };
+
+const CAROUSEL_INTERVAL_MS = 2000;
 
 export const PROJECTS: Project[] = [
   {
@@ -45,6 +55,7 @@ export const PROJECTS: Project[] = [
     ],
     isMock: false,
     previewImages: ["/dev-tool-01.png", "/dev-tool-02.png"],
+    previewCarouselIntervalMs: CAROUSEL_INTERVAL_MS,
     primaryLabel: "open tools",
     primaryHref: "/tools",
     secondaryLabel: "about me",
@@ -88,10 +99,59 @@ export const PROJECTS: Project[] = [
     primaryHref: "https://meme-the-db-abuser.vercel.app/",
     secondaryLabel: "browse repo",
     secondaryHref: "https://github.com/NopksForge/meme-the-db-abuser",
+    previewCarouselIntervalMs: CAROUSEL_INTERVAL_MS,
+  },
+  {
+    id: "hellloop",
+    code: "03",
+    name: "Hell Loop",
+    status: "live",
+    desc: "A daily card game: four stages of card guesses. Fail one, restart from Stage 1. EN/TH, all client-side. Inspired by Loop นรก 678 (Rubsarb Production).",
+    role: "designer · developer",
+    period: "2026",
+    stack: ["Next.js", "React", "TypeScript", "Tailwind CSS"],
+    tags: [
+      "next.js",
+      "game",
+      "i18n",
+      "mobile-friendly",
+    ],
+    features: [
+      "Daily run — one canonical deck per calendar day for everyone",
+      "Stage1 — Red/Black",
+      "Stage2 — High/Low",
+      "Stage3 — In/Out",
+      "Stage4 — Guess the Suit",
+      "Retries — unlimited attempts; best outcome tracked",
+      "Streak — consecutive winning days in local storage",
+      "Win ledger — recent days’ results on the victory screen",
+      "Sound — Web Audio API oscillators/noise (no audio assets)",
+      "Bilingual UI — English / Thai with instant toggle",
+      "Rules modal — header ⓘ with stage rules and card order",
+      "Luxury UI — dark palette, card flip animations",
+    ],
+    metrics: [
+      { k: "stages", v: "4" },
+      { k: "cards", v: "52" },
+      { k: "streak", v: "0" },
+    ],
+    isMock: false,
+    previewIsPortrait: true,
+    // previewForceCarousel: true,
+    previewCarouselIntervalMs: CAROUSEL_INTERVAL_MS,
+    previewScale: 0.6,
+    previewImages: [
+      "/hell-loop-02.png",
+      "/hell-loop-03.png",
+      "/hell-loop-04.png",
+      "/hell-loop-05.png",
+    ],
+    primaryLabel: "open game",
+    primaryHref: "https://hell-loop.xyz",
   },
   {
     id: "infinite",
-    code: "03",
+    code: "04",
     name: "Infinite Onslaught",
     status: "wip",
     desc: "Webview roguelite combining infinite crafting discovery with real-time tower defense survival. Local AI proposes new recipes from element pairs you've already discovered.",
@@ -117,7 +177,7 @@ export const PROJECTS: Project[] = [
   },
   {
     id: "debugdragon",
-    code: "04",
+    code: "05",
     name: "Debug & Dragon",
     status: "wip",
     desc: "A browser RPG with live maps, chat and turn-based combat. Next.js frontend, Go backend, your own local AI plays dungeon master — narration, encounters, loot.",
